@@ -39,7 +39,7 @@ src/
 ├── controller/                  # Controllers for interfacing with the outer world (HTTP, GraphQL)
 │   ├── graphql/                 # GraphQL specific controllers
 │   └── fastapi/                 # FastAPI specific controllers (RESTful API)
-└── gateway/                     # Abstractions for external component integrations
+└── gateway (infra?)/            # Abstractions for external component integrations
     ├── elasticsearch/           # Elasticsearch integration logic
-    └── kafka/                   # Kafka integration logic
+    └── kafka/                   # Kafka integration logic (listeners)
 ```
