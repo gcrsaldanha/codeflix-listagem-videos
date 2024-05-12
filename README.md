@@ -36,7 +36,7 @@ src/
 │   ├── category.py
 │   ├── genre.py
 │   └── cast_member.py
-├── controller/                  # Controllers for interfacing with the outer world (HTTP, GraphQL)
+├── controller (api?)/                  # Controllers for interfacing with the outer world (HTTP, GraphQL)
 │   ├── graphql/                 # GraphQL specific controllers
 │   └── fastapi/                 # FastAPI specific controllers (RESTful API)
 └── gateway (infra?)/            # Abstractions for external component integrations

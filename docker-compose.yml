@@ -17,6 +17,12 @@ services:
       - mysql-data:/var/lib/mysql
     ports:
       - "3306:3306"
+  fastapi:
+    build: .
+    ports:
+      - "8000:8000"
+
+    command: ["fastapi", "run", "src/api/fastapi/app.py", "--port", "8000"]
 #  connect:
 #    image: quay.io/debezium/connect:2.5
 #    ports:
