@@ -21,8 +21,23 @@ services:
     build: .
     ports:
       - "8000:8000"
-
-    command: ["fastapi", "run", "src/api/fastapi/app.py", "--port", "8000"]
+    command: ["fastapi", "run", "src/api/fastapi/app.py", "--port", "8000", "--reload"]
+    volumes:
+      - .:/app
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - xpack.security.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
 #  connect:
 #    image: quay.io/debezium/connect:2.5
 #    ports:
@@ -40,3 +55,4 @@ services:
 volumes:
   kafka-data:
   mysql-data:
+  elasticsearch-data:
