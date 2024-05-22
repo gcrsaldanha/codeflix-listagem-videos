@@ -10,15 +10,5 @@ class InMemoryCategoryRepository(CategoryRepository):
     def save(self, category: Category) -> None:
         self.categories.append(category)
 
-    def get_by_id(self, id: UUID) -> Category | None:
-        return next(
-            (category for category in self.categories if category.id == id), None
-        )
-
-    def delete(self, id: UUID) -> None:
-        category = self.get_by_id(id)
-        if category:
-            self.categories.remove(category)
-
     def list(self) -> list[Category]:
         return [category for category in self.categories]

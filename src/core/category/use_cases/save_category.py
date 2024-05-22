@@ -6,23 +6,21 @@ from src.core.category.use_cases.exceptions import InvalidCategory
 from src.core.category.domain.category import Category
 
 
-@dataclass
-class CreateCategoryRequest:
-    name: str
-    description: str = ""
-    is_active: bool = True
-
-
-@dataclass
-class CreateCategoryResponse:
-    id: UUID
-
-
-class CreateCategory:
+class SaveCategory:
     def __init__(self, repository: CategoryRepository):
         self.repository = repository
 
-    def execute(self, request: CreateCategoryRequest) -> CreateCategoryResponse:
+    @dataclass
+    class Input:
+        name: str
+        description: str = ""
+        is_active: bool = True
+
+    @dataclass
+    class Output:
+        id: UUID
+
+    def execute(self, request: Input) -> Output:
         try:
             category = Category(
                 name=request.name,
@@ -33,5 +31,4 @@ class CreateCategory:
             raise InvalidCategory(err)
 
         self.repository.save(category)
-        return CreateCategoryResponse(id=category.id)
-
+        return self.Output(id=category.id)

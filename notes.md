@@ -1,0 +1,5 @@
+- [ ] Organização de pastas
+- [ ] `Category` deve possuir todos os campos?
+  - https://github.com/devfullcycle/FC3-catalogo-de-videos-api-java/blob/main/domain/src/main/java/com/fullcycle/catalogo/domain/category/Category.java#L8
+  - Parece que não tem mais o conceito de "entity"/"aggregate".
+- [ ] UseCase recebendo e retornado o Domain direto

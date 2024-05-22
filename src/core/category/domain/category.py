@@ -11,6 +11,7 @@ class Category(Entity):
     description: str = ""
     is_active: bool = True
 
+
     def __post_init__(self):
         self.validate()
 
