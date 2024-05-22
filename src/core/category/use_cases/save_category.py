@@ -7,6 +7,7 @@ from src.core.category.domain.category import Category
 
 
 class SaveCategory:
+    # Ref: https://github.com/devfullcycle/FC3-catalogo-de-videos-api-java/blob/main/application/src/main/java/com/fullcycle/catalogo/application/category/save/SaveCategoryUseCase.java
     def __init__(self, repository: CategoryRepository):
         self.repository = repository
 
