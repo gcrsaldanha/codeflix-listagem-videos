@@ -1,3 +1,5 @@
+- [ ] Docker compose
+- [ ] Grande parte do projeto vai ser muito parecida com os outros - seguir o mesmo padrão!
 - [ ] Organização de pastas
 - [ ] `Category` deve possuir todos os campos?
   - https://github.com/devfullcycle/FC3-catalogo-de-videos-api-java/blob/main/domain/src/main/java/com/fullcycle/catalogo/domain/category/Category.java#L8
