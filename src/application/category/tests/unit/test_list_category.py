@@ -2,14 +2,10 @@ from unittest.mock import create_autospec
 
 import pytest
 
-from src.core.category.use_cases.list_category import (
-    CategoryOutput,
-    ListCategory,
-    ListCategoryRequest,
-    ListCategoryResponse, ListOutputMeta,
-)
-from src.core.category.domain.category import Category
-from src.core.category.domain.category_repository import CategoryRepository
+from src.application.category.list_category import ListCategory
+from src.application.listing import ListOutputMeta
+from src.domain.category.category import Category
+from src.domain.category.category_repository import CategoryRepository
 
 
 class TestListCategory:
@@ -60,9 +56,9 @@ class TestListCategory:
         mock_empty_repository: CategoryRepository,
     ) -> None:
         use_case = ListCategory(repository=mock_empty_repository)
-        response = use_case.execute(request=ListCategoryRequest())
+        response = use_case.execute(input=ListCategory.Input())
 
-        assert response == ListCategoryResponse(
+        assert response == ListCategory.Output(
             data=[],
             meta=ListOutputMeta(
                 current_page=1,
@@ -79,17 +75,17 @@ class TestListCategory:
         category_documentary: Category,
     ) -> None:
         use_case = ListCategory(repository=mock_populated_repository)
-        response = use_case.execute(request=ListCategoryRequest())
+        response = use_case.execute(input=ListCategory.Input())
 
-        assert response == ListCategoryResponse(
+        assert response == ListCategory.Output(
             data=[
-                CategoryOutput(
+                ListCategory.CategoryOutput(
                     id=category_documentary.id,
                     name=category_documentary.name,
                     description=category_documentary.description,
                     is_active=category_documentary.is_active,
                 ),
-                CategoryOutput(
+                ListCategory.CategoryOutput(
                     id=category_movie.id,
                     name=category_movie.name,
                     description=category_movie.description,
@@ -97,7 +93,7 @@ class TestListCategory:
                 ),
                 # Documentary vem antes, "empurra" o Movie para fora da página
                 # Por isso precisamos ordernar a lista de categorias antes de paginar
-                # CategoryOutput(
+                # ListCategory.CategoryOutput(
                 #     id=category_series.id,
                 #     name=category_series.name,
                 #     description=category_series.description,
@@ -113,9 +109,9 @@ class TestListCategory:
 
     def test_fetch_page_without_elements(self, mock_populated_repository: CategoryRepository) -> None:
         use_case = ListCategory(repository=mock_populated_repository)
-        response = use_case.execute(request=ListCategoryRequest(current_page=3))
+        response = use_case.execute(input=ListCategory.Input(current_page=3))
 
-        assert response == ListCategoryResponse(
+        assert response == ListCategory.Output(
             data=[],
             meta=ListOutputMeta(
                 current_page=3,
@@ -130,11 +126,11 @@ class TestListCategory:
         category_series: Category,  # Foi "empurrado" para última página
     ) -> None:
         use_case = ListCategory(repository=mock_populated_repository)
-        response = use_case.execute(request=ListCategoryRequest(current_page=2))
+        response = use_case.execute(input=ListCategory.Input(current_page=2))
 
-        assert response == ListCategoryResponse(
+        assert response == ListCategory.Output(
             data=[
-                CategoryOutput(
+                ListCategory.CategoryOutput(
                     id=category_series.id,
                     name=category_series.name,
                     description=category_series.description,

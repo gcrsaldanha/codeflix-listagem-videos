@@ -2,10 +2,10 @@ from unittest.mock import MagicMock
 from uuid import UUID
 
 import pytest
-from src.core.category.domain.category_repository import CategoryRepository
 
-from src.core.category.use_cases.save_category import SaveCategory
-from src.core.category.use_cases.exceptions import InvalidCategory
+from src.application.category.exceptions import InvalidCategory
+from src.application.category.save_category import SaveCategory
+from src.domain.category.category_repository import CategoryRepository
 
 
 class TestSaveCategory:

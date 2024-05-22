@@ -1,14 +1,15 @@
-import pytest
-from uuid import UUID
 import uuid
+from uuid import UUID
 
-from src.core.category.domain.category import Category
+import pytest
+
+from src.domain.category.category import Category
 
 
 class TestCategory:
     def test_name_is_required(self):
         with pytest.raises(
-            TypeError, match="missing 1 required positional argument: 'name'"
+                TypeError, match="missing 1 required positional argument: 'name'"
         ):
             Category()
 

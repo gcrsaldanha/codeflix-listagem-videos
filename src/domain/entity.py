@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from uuid import UUID
 
-from src.core._shared.domain.notification import Notification
+from src.domain.notification import Notification
 
 logger = logging.getLogger(__name__)
 

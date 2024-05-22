@@ -6,10 +6,12 @@ import uuid
 app = FastAPI()
 es = Elasticsearch(['http://elasticsearch:9200'])
 
+
 class Category(BaseModel):
     name: str
     description: str
     is_active: bool
+
 
 # Check if the index exists, if not, create it
 if not es.indices.exists(index="categories"):

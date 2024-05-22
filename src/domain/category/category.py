@@ -1,8 +1,6 @@
-import uuid
-from dataclasses import dataclass, field
-from uuid import UUID
+from dataclasses import dataclass
 
-from src.core._shared.domain.entity import Entity
+from src.domain.entity import Entity
 
 
 @dataclass(eq=False)
@@ -10,7 +8,6 @@ class Category(Entity):
     name: str
     description: str = ""
     is_active: bool = True
-
 
     def __post_init__(self):
         self.validate()

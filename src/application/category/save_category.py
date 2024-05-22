@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from uuid import UUID
-from src.core.category.domain.category_repository import CategoryRepository
-from src.core.category.use_cases.exceptions import InvalidCategory
 
-from src.core.category.domain.category import Category
+from src.application.category.exceptions import InvalidCategory
+from src.domain.category.category import Category
+from src.domain.category.category_repository import CategoryRepository
 
 
 class SaveCategory:

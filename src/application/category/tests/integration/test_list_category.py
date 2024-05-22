@@ -1,13 +1,9 @@
 import pytest
 
-from src.core.category.use_cases.list_category import (
-    CategoryOutput,
-    ListCategory,
-    ListCategoryRequest,
-    ListCategoryResponse, ListOutputMeta,
-)
-from src.core.category.domain.category import Category
-from src.core.category.infra.in_memory_category_repository import (
+from src.application.category.list_category import ListCategory
+from src.application.listing import ListOutputMeta
+from src.domain.category.category import Category
+from src.infra.category.in_memory_category_repository import (
     InMemoryCategoryRepository,
 )
 
@@ -37,9 +33,9 @@ class TestListCategory:
     def test_when_no_categories_then_return_empty_list(self) -> None:
         empty_repository = InMemoryCategoryRepository()
         use_case = ListCategory(repository=empty_repository)
-        response = use_case.execute(request=ListCategoryRequest())
+        response = use_case.execute(input=ListCategory.Input())
 
-        assert response == ListCategoryResponse(
+        assert response == ListCategory.Output(
             data=[],
             meta=ListOutputMeta(),
         )
@@ -56,24 +52,24 @@ class TestListCategory:
         repository.save(category=category_documentary)
 
         use_case = ListCategory(repository=repository)
-        response = use_case.execute(request=ListCategoryRequest())
+        response = use_case.execute(input=ListCategory.Input())
 
-        assert response == ListCategoryResponse(
+        assert response == ListCategory.Output(
             data=[
-                CategoryOutput(
+                ListCategory.CategoryOutput(
                     id=category_documentary.id,
                     name=category_documentary.name,
                     description=category_documentary.description,
                     is_active=category_documentary.is_active,
                 ),
-                CategoryOutput(
+                ListCategory.CategoryOutput(
                     id=category_movie.id,
                     name=category_movie.name,
                     description=category_movie.description,
                     is_active=category_movie.is_active,
                 ),
                 # "Empurrado" por category_documentary
-                # CategoryOutput(
+                # ListCategory.CategoryOutput(
                 #     id=category_series.id,
                 #     name=category_series.name,
                 #     description=category_series.description,
