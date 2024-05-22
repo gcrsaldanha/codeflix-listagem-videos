@@ -9,5 +9,5 @@ class CategoryRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def list(self) -> list[Category]:
+    def list(self, query: str = "") -> list[Category]:
         raise NotImplementedError

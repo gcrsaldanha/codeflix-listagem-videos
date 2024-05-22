@@ -1,7 +1,10 @@
+- [ ] O SaveCategory use case só vai ser chamado pelo nosso Kafka, correto?
+- [ ] Gateway vs Repository
 - [ ] Docker compose
 - [ ] Grande parte do projeto vai ser muito parecida com os outros - seguir o mesmo padrão!
 - [ ] Organização de pastas
 - [ ] `Category` deve possuir todos os campos?
   - https://github.com/devfullcycle/FC3-catalogo-de-videos-api-java/blob/main/domain/src/main/java/com/fullcycle/catalogo/domain/category/Category.java#L8
   - Parece que não tem mais o conceito de "entity"/"aggregate".
-- [ ] UseCase recebendo e retornado o Domain direto
+- [ ] UseCase input/output com o Domain direto
+- [ ] Exibir o id?

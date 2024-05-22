@@ -1,7 +1,7 @@
-from http.client import HTTPException
 from uuid import UUID
 
 import strawberry
+from strawberry.fastapi import GraphQLRouter
 
 
 @strawberry.type
@@ -41,5 +41,7 @@ class Query:
 
 
 schema = strawberry.Schema(query=Query)
+
+graphql_app = GraphQLRouter(schema)
 
 # Run: strawberry server src.api.graphql.app.schema --port 8001
