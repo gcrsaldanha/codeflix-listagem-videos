@@ -16,3 +16,4 @@
 https://fastapi.tiangolo.com/tutorial/bigger-applications/
 https://fastapi.tiangolo.com/tutorial/dependencies/global-dependencies/
 https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-in-path-operation-decorators/
+https://fastapi.tiangolo.com/advanced/events/#lifespan-events

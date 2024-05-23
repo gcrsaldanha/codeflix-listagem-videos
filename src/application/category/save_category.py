@@ -25,15 +25,15 @@ class SaveCategory:
     class Output:
         id: UUID
 
-    def execute(self, request: Input) -> Output:
+    def execute(self, input: Input) -> Output:
         try:
             category = Category(
-                id=request.id,
-                name=request.name,
-                description=request.description,
-                is_active=request.is_active,
-                created_at=request.created_at,
-                updated_at=request.updated_at,
+                id=input.id,
+                name=input.name,
+                description=input.description,
+                is_active=input.is_active,
+                created_at=input.created_at,
+                updated_at=input.updated_at,
             )
             self.repository.save(category)
         except ValueError as err:
