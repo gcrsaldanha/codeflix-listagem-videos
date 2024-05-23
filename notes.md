@@ -8,3 +8,5 @@
   - Parece que não tem mais o conceito de "entity"/"aggregate".
 - [ ] UseCase input/output com o Domain direto
 - [ ] Exibir o id?
+- [ ] Fazer apenas usecases de listagem e de salvar. Deixar o usecase de deletar como desafio?
+- [ ] Podemos assumir que o save vai ser sempre um **PUT**?

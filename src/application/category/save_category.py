@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from uuid import UUID
 
 from src.application.category.exceptions import InvalidCategory
@@ -13,9 +14,12 @@ class SaveCategory:
 
     @dataclass
     class Input:
+        id: UUID
         name: str
-        description: str = ""
-        is_active: bool = True
+        description: str
+        is_active: bool
+        created_at: datetime
+        updated_at: datetime
 
     @dataclass
     class Output:
@@ -24,10 +28,14 @@ class SaveCategory:
     def execute(self, request: Input) -> Output:
         try:
             category = Category(
+                id=request.id,
                 name=request.name,
                 description=request.description,
                 is_active=request.is_active,
+                created_at=request.created_at,
+                updated_at=request.updated_at,
             )
+            self.repository.save(category)
         except ValueError as err:
             raise InvalidCategory(err)
 

@@ -2,8 +2,7 @@ elasticsearch==8.13.1
 fastapi==0.111.0
 ipdb==0.13.13
 ipython==8.23.0
-pika==1.3.2
-pyjwt==2.8.0
+pydantic==2.7.1
 pytest==8.1.1
 python-dotenv==1.0.1
 strawberry-graphql[fastapi,debug-server]==0.229.1
