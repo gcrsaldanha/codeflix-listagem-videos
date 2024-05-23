@@ -1,27 +1,20 @@
+import logging
 from contextlib import asynccontextmanager
 
-from confluent_kafka import Consumer
 from fastapi import FastAPI
 
 from src.api.fastapi.category_router import router as category_router
 from src.api.graphql.main import graphql_app
-from src.infra.kafka.consumer import basic_consume_loop
 
-# TODO: esta falhando ao tentar conectar, mesmo rodando no iPython
-conf = {'bootstrap.servers': 'kafka:9092',
-        'group.id': 'categories-group',
-        'auto.offset.reset': 'smallest'}
-
-consumer = Consumer(conf)
-# basic_consume_loop(consumer, topics=["categories"])
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Starting Kafka Consumer...")
-    # basic_consume_loop(consumer, topics=["categories"])
+    logger.info("Starting server")
     yield
-    print("Stopping server...")
+    logger.info("Stopping server")
 
 
 app = FastAPI(lifespan=lifespan)

@@ -114,7 +114,15 @@ docker volume create kafka-data
 docker run -p 9092:9092 -v kafka-data:/var/lib/kafka apache/kafka:3.7.0
 ```
 
-Docker compose:
+### Docker compose
+From the official docker image:
+https://github.com/apache/kafka/blob/trunk/docker/examples/README.md
+
+
+### Por que não consigo conectar no container?
+
+https://www.confluent.io/blog/kafka-listeners-explained/
+
 ```yaml
 version: '3'
 services:
