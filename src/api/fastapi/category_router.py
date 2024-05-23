@@ -1,9 +1,9 @@
 from fastapi import HTTPException, APIRouter
 
-from src.api.fastapi.dependencies import get_elasticsearch
 from src.api.models import Category
 from src.application.category.list_category import ListCategory
 from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
+from src.infra.elasticsearch.client import get_elasticsearch
 
 router = APIRouter()
 
@@ -11,7 +11,7 @@ router = APIRouter()
 @router.get("/", response_model=list[Category])
 def list_categories():
     try:
-        list_use_case = ListCategory(repository=CategoryElasticRepository(client=get_elasticsearch()))
+        list_use_case = ListCategory(repository=CategoryElasticRepository())
         output = list_use_case.execute(input=ListCategory.Input())
         return output.data
     except Exception as e:

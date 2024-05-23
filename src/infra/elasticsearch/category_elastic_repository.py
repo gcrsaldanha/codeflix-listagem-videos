@@ -4,11 +4,12 @@ from elasticsearch import Elasticsearch
 
 from src.domain.category.category import Category
 from src.domain.category.category_repository import CategoryRepository
+from src.infra.elasticsearch.client import get_elasticsearch
 
 
 class CategoryElasticRepository(CategoryRepository):
-    def __init__(self, client: Elasticsearch):
-        self.client = client
+    def __init__(self, client: Elasticsearch | None = None):
+        self.client = client or get_elasticsearch()
 
     def save(self, category: Category) -> None:
         self.client.index(index='categories', id=str(category.id), body=asdict(category))

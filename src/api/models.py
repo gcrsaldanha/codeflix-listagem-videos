@@ -4,7 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class Category(BaseModel):  # TODO: not FastAPI only
+class Category(BaseModel):  # TODO: create from Domain Model / Output
     id: uuid.UUID
     name: str
     description: str
