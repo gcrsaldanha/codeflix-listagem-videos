@@ -3,8 +3,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from src.api.fastapi.category_router import router as category_router
-from src.api.graphql.main import graphql_app
+from src.infra.api.http.category_router import router as category_router
+from src.infra.api.graphql.main import graphql_app
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

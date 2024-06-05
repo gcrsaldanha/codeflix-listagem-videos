@@ -1,7 +1,7 @@
 from fastapi import HTTPException, APIRouter
 
-from src.api.models import Category
 from src.application.category.list_category import ListCategory
+from src.infra.api.models import Category
 from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
 from src.infra.elasticsearch.client import get_elasticsearch
 

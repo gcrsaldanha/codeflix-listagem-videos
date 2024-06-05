@@ -1,6 +1,6 @@
 from strawberry.fastapi import GraphQLRouter
 
-from src.api.graphql.schemas import schema
+from src.infra.api.graphql.schemas import schema
 
 graphql_app = GraphQLRouter(schema)
 

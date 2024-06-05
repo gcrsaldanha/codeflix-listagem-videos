@@ -1,8 +1,6 @@
 from dataclasses import asdict
 
-from pydantic import BaseModel, TypeAdapter
-
-from src.api.models import Category
+from src.infra.api.models import Category
 from src.application.category.list_category import ListCategory
 from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
 

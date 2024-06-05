@@ -1,7 +1,7 @@
 import strawberry
 
-from src.api.graphql.resolvers import list_categories
-from src.api.models import Category
+from src.infra.api.graphql.resolvers import list_categories
+from src.infra.api.models import Category
 
 
 @strawberry.experimental.pydantic.type(model=Category, all_fields=True)

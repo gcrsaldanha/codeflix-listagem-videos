@@ -38,7 +38,7 @@ services:
     build: .
     ports:
       - "8000:8000"
-    command: ["fastapi", "dev", "src/api/fastapi/main.py", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    command: ["fastapi", "dev", "src/infra/api/http/main.py", "--host", "0.0.0.0", "--port", "8000", "--reload"]
     volumes:
       - .:/app
   elasticsearch:
