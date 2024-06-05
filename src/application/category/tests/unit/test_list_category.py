@@ -3,6 +3,7 @@ from unittest.mock import create_autospec
 import pytest
 
 from src.application.category.list_category import ListCategory
+from src.application.category.tests.factories import CategoryFactory
 from src.application.listing import ListOutputMeta
 from src.domain.category.category import Category
 from src.domain.category.category_repository import CategoryRepository
@@ -11,21 +12,21 @@ from src.domain.category.category_repository import CategoryRepository
 class TestListCategory:
     @pytest.fixture
     def category_movie(self) -> Category:
-        return Category(
+        return CategoryFactory(
             name="Filme",
             description="Categoria de filmes",
         )
 
     @pytest.fixture
     def category_series(self) -> Category:
-        return Category(
+        return CategoryFactory(
             name="Séries",
             description="Categoria de séries",
         )
 
     @pytest.fixture
     def category_documentary(self) -> Category:
-        return Category(
+        return CategoryFactory(
             name="Documentário",
             description="Categoria de documentários",
         )
@@ -84,12 +85,16 @@ class TestListCategory:
                     name=category_documentary.name,
                     description=category_documentary.description,
                     is_active=category_documentary.is_active,
+                    created_at=category_documentary.created_at,
+                    updated_at=category_documentary.updated_at,
                 ),
                 ListCategory.CategoryOutput(
                     id=category_movie.id,
                     name=category_movie.name,
                     description=category_movie.description,
                     is_active=category_movie.is_active,
+                    created_at=category_movie.created_at,
+                    updated_at=category_movie.updated_at,
                 ),
                 # Documentary vem antes, "empurra" o Movie para fora da página
                 # Por isso precisamos ordernar a lista de categorias antes de paginar
@@ -135,6 +140,8 @@ class TestListCategory:
                     name=category_series.name,
                     description=category_series.description,
                     is_active=category_series.is_active,
+                    created_at=category_series.created_at,
+                    updated_at=category_series.updated_at,
                 )
             ],
             meta=ListOutputMeta(

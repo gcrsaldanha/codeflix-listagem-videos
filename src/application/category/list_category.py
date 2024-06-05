@@ -10,7 +10,6 @@ from src.domain.category.category_repository import CategoryRepository
 class ListCategory:
     @dataclass
     class CategoryOutput:
-        # TODO: can we simply use the domain object?
         id: UUID
         name: str
         description: str
@@ -32,6 +31,14 @@ class ListCategory:
 
     def execute(self, input: Input) -> Output:
         categories = self.repository.list()
+        # TODO: order in repository
+        ordered_categories = sorted(
+            categories,
+            key=lambda category: getattr(category, input.order_by),
+        )
+        page_offset = (input.current_page - 1) * config.DEFAULT_PAGINATION_SIZE
+        categories_page = ordered_categories[page_offset : page_offset + config.DEFAULT_PAGINATION_SIZE]
+
         return self.Output(
             data=[
                 self.CategoryOutput(
@@ -41,7 +48,8 @@ class ListCategory:
                     is_active=category.is_active,
                     created_at=category.created_at,
                     updated_at=category.updated_at,
-                ) for category in categories
+                )
+                for category in categories_page
             ],
             meta=ListOutputMeta(
                 current_page=input.current_page,

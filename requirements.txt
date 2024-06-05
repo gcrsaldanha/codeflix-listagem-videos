@@ -1,5 +1,6 @@
 confluent-kafka==2.4.0
 elasticsearch==8.13.1
+factory_boy==3.3.0
 fastapi==0.111.0
 ipdb==0.13.13
 ipython==8.23.0

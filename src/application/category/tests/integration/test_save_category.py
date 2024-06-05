@@ -1,3 +1,5 @@
+import uuid
+from datetime import datetime, timezone
 from uuid import UUID
 
 from src.application.category.save_category import SaveCategory
@@ -5,13 +7,18 @@ from src.infra.category.in_memory_category_repository import InMemoryCategoryRep
 
 
 class TestSaveCategory:
-    def test_save_category_with_valid_data(self):
-        repository = InMemoryCategoryRepository()  # SQLAlchmmy / DjangoORMRepository
+    def test_when_category_does_not_exist_then_create_it(self):
+        repository = InMemoryCategoryRepository()
         use_case = SaveCategory(repository=repository)
+        id = uuid.uuid4()
+        now = datetime.now(timezone.utc)
         request = SaveCategory.Input(
+            id=id,
             name="Filme",
             description="Categoria para filmes",
-            is_active=True,  # default
+            is_active=True,
+            created_at=now,
+            updated_at=now,
         )
 
         response = use_case.execute(request)
@@ -29,10 +36,15 @@ class TestSaveCategory:
     def test_save_inactive_category_with_valid_data(self):
         repository = InMemoryCategoryRepository()
         use_case = SaveCategory(repository=repository)
+        id = uuid.uuid4()
+        now = datetime.now(timezone.utc)
         request = SaveCategory.Input(
+            id=id,
             name="Filme",
             description="Categoria para filmes",
             is_active=False,
+            created_at=now,
+            updated_at=now,
         )
 
         response = use_case.execute(request)

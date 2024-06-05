@@ -1,11 +1,11 @@
-from src.domain.category.category import Category
+from src.application.category.tests.factories import CategoryFactory
 from src.infra.category.in_memory_category_repository import InMemoryCategoryRepository
 
 
 class TestSave:
     def test_can_save_category(self):
         repository = InMemoryCategoryRepository()
-        category = Category(
+        category = CategoryFactory(
             name="Filme",
             description="Categoria para filmes",
         )

@@ -7,7 +7,10 @@ class InMemoryCategoryRepository(CategoryRepository):
         self.categories: list[Category] = categories or []
 
     def save(self, category: Category) -> None:
-        self.categories.append(category)
+        if category not in self.categories:
+            self.categories.append(category)
+        else:
+            self.categories[self.categories.index(category)] = category
 
-    def list(self) -> list[Category]:
+    def list(self, query: str = "") -> list[Category]:
         return [category for category in self.categories]
