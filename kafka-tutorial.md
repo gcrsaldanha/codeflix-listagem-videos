@@ -135,3 +135,9 @@ services:
 volumes:
     kafka-data:
 ```
+
+
+### Partitioning
+
+- Dividir um topic em varias partições. Se a mensagem não tem uma `key`, kafka faz round robin.
+- Podemos utilizar a `key` como o `id` da entidade, assim garantimos que as mensagens relacionadas a uma entidade vão para a mesma partição, logo, vão ser processadas na ordem correta.

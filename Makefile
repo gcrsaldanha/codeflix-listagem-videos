@@ -18,6 +18,10 @@ produce-events:
 consume-events:
 	docker compose exec -it kafka /opt/kafka/bin/kafka-console-consumer.sh --topic $(topic) --from-beginning --bootstrap-server localhost:9092
 
+
+run-consumer:
+	docker compose up -d consumer
+
 run-connect:
 	docker compose exec -it kafka \
 	/opt/kafka/bin/connect-standalone.sh \
