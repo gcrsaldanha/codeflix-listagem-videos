@@ -224,6 +224,20 @@ DELETE FROM categories WHERE id = '3';
 }
 ```
 
+## Consistência Eventual
+
+Vamos parar o Kafka connector e fazer uma mudança no banco de dados. Depois iniciá-lo.
+Nós não podemos garantir que os dados no nosso serviço de busca estarão sempre consistentes, mas sim, eventualmente.
+
+> O terminal com o `consume-events` deve continuar rodando!
+```
+docker compose up connect
+...
+connect  | 2024-06-06 09:38:03,685 INFO   MySQL|catalog-db|snapshot  A previous offset indicating a completed snapshot has been found...
+```
+
+Verificar no consumer que após o connector ser inicializado, ele exibe apenas a última alteração no banco.
+
 
 >  Schema changes: `make consume-events topic=schema-changes.catalog`
 > MySQL mantem o registro de todas as alterações no banco de dados, incluindo as alterações de schema bn 
