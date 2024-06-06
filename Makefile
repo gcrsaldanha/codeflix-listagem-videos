@@ -4,13 +4,19 @@ run-kafka:
 	docker compose up -d kafka
 
 create-topic:
-	docker compose exec -it kafka /opt/kafka/bin/kafka-topics.sh --create --topic categories --bootstrap-server localhost:9092
+	docker compose exec -it kafka /opt/kafka/bin/kafka-topics.sh --create --topic $(topic) --bootstrap-server localhost:9092
+
+list-topics:
+	docker compose exec -it kafka /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+
+delete-topic:
+	docker compose exec -it kafka /opt/kafka/bin/kafka-topics.sh --delete --topic $(topic) --bootstrap-server localhost:9092
 
 produce-events:
-	docker compose exec -it kafka /opt/kafka/bin/kafka-console-producer.sh --topic categories --bootstrap-server localhost:9092
+	docker compose exec -it kafka /opt/kafka/bin/kafka-console-producer.sh --topic $(topic) --bootstrap-server localhost:9092
 
 consume-events:
-	docker compose exec -it kafka /opt/kafka/bin/kafka-console-consumer.sh --topic categories --from-beginning --bootstrap-server localhost:9092
+	docker compose exec -it kafka /opt/kafka/bin/kafka-console-consumer.sh --topic $(topic) --from-beginning --bootstrap-server localhost:9092
 
 run-connect:
 	docker compose exec -it kafka \
