@@ -222,7 +222,12 @@ DELETE FROM categories WHERE id = '3';
     }
   }
 }
-```
+``` 
+
+> ENV PYTHONUNBUFFERED=1
+
+Esse configuração faz com que o Python não faça buffer de saída, ou seja, ele imprime na tela o log na hora.
+Eu estava precisando de 2 eventos aí os dois eram impressos de uma vez.
 
 ## Consistência Eventual
 
