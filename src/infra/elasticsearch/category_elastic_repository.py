@@ -21,7 +21,7 @@ class CategoryElasticRepository(CategoryRepository):
 
     def search(
         self, search: str = None, page: int = 1, per_page: int = 10, sort: str = None, direction: str = "asc"
-    ) -> Tuple[List[Category], int, int]:
+    ) -> Tuple[List[Category], int]:
         if sort in {"name", "description"}:
             sort_field = f"{sort}.keyword"
         else:
