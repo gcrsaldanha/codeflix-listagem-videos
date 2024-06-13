@@ -3,7 +3,7 @@ from datetime import datetime
 from uuid import UUID
 
 from src import config
-from src.application.listing import ListOutputMeta, ListOutput
+from src.application.listing import ListOutputMeta, ListOutput, ListInput
 from src.domain.category.category_repository import CategoryRepository
 
 
@@ -18,9 +18,8 @@ class ListCategory:
         updated_at: datetime
 
     @dataclass
-    class Input:
-        order_by: str = "name"
-        current_page: int = 1
+    class Input(ListInput):
+        sort: str = "name"
 
     @dataclass
     class Output(ListOutput[CategoryOutput]):
@@ -29,31 +28,35 @@ class ListCategory:
     def __init__(self, repository: CategoryRepository) -> None:
         self.repository = repository
 
+    # TODO: validate listing sort field
     def execute(self, input: Input) -> Output:
-        categories = self.repository.list()
-        # TODO: order in repository
-        ordered_categories = sorted(
-            categories,
-            key=lambda category: getattr(category, input.order_by),
+        categories, total_count = self.repository.search(
+            search=input.search,
+            page=input.page,
+            per_page=input.per_page,
+            sort=input.sort,
+            direction=input.direction,
         )
-        page_offset = (input.current_page - 1) * config.DEFAULT_PAGINATION_SIZE
-        categories_page = ordered_categories[page_offset : page_offset + config.DEFAULT_PAGINATION_SIZE]
 
-        return self.Output(
-            data=[
-                self.CategoryOutput(
-                    id=category.id,
-                    name=category.name,
-                    description=category.description,
-                    is_active=category.is_active,
-                    created_at=category.created_at,
-                    updated_at=category.updated_at,
-                )
-                for category in categories_page
-            ],
-            meta=ListOutputMeta(
-                current_page=input.current_page,
-                per_page=config.DEFAULT_PAGINATION_SIZE,
-                total=len(categories),
-            ),
+        print(categories, total_count)
+        next_page = input.page + 1 if total_count > input.page * input.per_page else None
+
+        data = [
+            self.CategoryOutput(
+                id=category.id,
+                name=category.name,
+                description=category.description,
+                is_active=category.is_active,
+                created_at=category.created_at,
+                updated_at=category.updated_at,
+            )
+            for category in categories
+        ]
+        meta = ListOutputMeta(
+            page=input.page,
+            per_page=input.per_page,
+            next_page=next_page,
+            total_count=total_count,
         )
+
+        return ListCategory.Output(data=data, meta=meta)

@@ -82,7 +82,7 @@ class TestListCategory:
                 # ),
             ],
             meta=ListOutputMeta(
-                current_page=1,
+                page=1,
                 per_page=2,
                 total=3,
             ),
