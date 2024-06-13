@@ -62,7 +62,7 @@ class TestListCategory:
         assert response == ListCategory.Output(
             data=[],
             meta=ListOutputMeta(
-                current_page=1,
+                page=1,
                 per_page=2,
                 total=0,
             ),
@@ -106,7 +106,7 @@ class TestListCategory:
                 # ),
             ],
             meta=ListOutputMeta(
-                current_page=1,
+                page=1,
                 per_page=2,
                 total=3,
             ),
@@ -114,12 +114,12 @@ class TestListCategory:
 
     def test_fetch_page_without_elements(self, mock_populated_repository: CategoryRepository) -> None:
         use_case = ListCategory(repository=mock_populated_repository)
-        response = use_case.execute(input=ListCategory.Input(current_page=3))
+        response = use_case.execute(input=ListCategory.Input(page=3))
 
         assert response == ListCategory.Output(
             data=[],
             meta=ListOutputMeta(
-                current_page=3,
+                page=3,
                 per_page=2,
                 total=3,
             ),
@@ -131,7 +131,7 @@ class TestListCategory:
         category_series: Category,  # Foi "empurrado" para última página
     ) -> None:
         use_case = ListCategory(repository=mock_populated_repository)
-        response = use_case.execute(input=ListCategory.Input(current_page=2))
+        response = use_case.execute(input=ListCategory.Input(page=2))
 
         assert response == ListCategory.Output(
             data=[
@@ -145,7 +145,7 @@ class TestListCategory:
                 )
             ],
             meta=ListOutputMeta(
-                current_page=2,
+                page=2,
                 per_page=2,
                 total=3,
             ),

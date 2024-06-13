@@ -6,12 +6,25 @@ from src import config
 
 T = TypeVar("T")
 
+# TODO: use pydantic for validation of input params
+# TODO: inherit ListInput for each class to get proper input params
+
+
+@dataclass
+class ListInput:
+    search: str | None = None
+    page: int = 1
+    per_page: int = 10
+    sort: str | None = None
+    direction: str = "asc"
+
 
 @dataclass
 class ListOutputMeta:
-    current_page: int = 1
+    page: int = 1
     per_page: int = config.DEFAULT_PAGINATION_SIZE
-    total: int = 0
+    next_page: int | None = None
+    total_count: int = 0
 
 
 @dataclass
