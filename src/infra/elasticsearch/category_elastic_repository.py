@@ -3,9 +3,8 @@ from typing import List, Tuple
 from elasticsearch import Elasticsearch
 
 from src.domain.category.category import Category
-from src.infra.elasticsearch.client import get_elasticsearch
-
 from src.domain.category.category_repository import CategoryRepository
+from src.infra.elasticsearch.client import get_elasticsearch
 
 
 class CategoryElasticRepository(CategoryRepository):
@@ -22,6 +21,7 @@ class CategoryElasticRepository(CategoryRepository):
     def search(
         self, search: str = None, page: int = 1, per_page: int = 10, sort: str = None, direction: str = "asc"
     ) -> Tuple[List[Category], int]:
+        # TODO: "who" should decide which fields are searchable? Application layer?
         if sort in {"name", "description"}:
             sort_field = f"{sort}.keyword"
         else:
