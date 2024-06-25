@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from datetime import datetime
 from uuid import UUID
+
+from pydantic import ValidationError
 
 from src.application.category.exceptions import InvalidCategory
 from src.domain.category.category import Category
@@ -14,12 +15,7 @@ class SaveCategory:
 
     @dataclass
     class Input:
-        id: UUID
-        name: str
-        description: str
-        is_active: bool
-        created_at: datetime
-        updated_at: datetime
+        category: Category
 
     @dataclass
     class Output:
@@ -27,17 +23,9 @@ class SaveCategory:
 
     def execute(self, input: Input) -> Output:
         try:
-            category = Category(
-                id=input.id,
-                name=input.name,
-                description=input.description,
-                is_active=input.is_active,
-                created_at=input.created_at,
-                updated_at=input.updated_at,
-            )
-            self.repository.save(category)
-        except ValueError as err:
-            raise InvalidCategory(err)
-
-        self.repository.save(category)
-        return self.Output(id=category.id)
+            self.repository.save(input.category)
+        except ValidationError as validation_error:
+            # TODO: adapt this for GraphQL
+            raise InvalidCategory(validation_error)
+        else:
+            return self.Output(id=input.category.id)

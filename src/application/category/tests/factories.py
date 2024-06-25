@@ -6,13 +6,16 @@ import factory
 from src.domain.category.category import Category
 
 
-class CategoryFactory(factory.Factory):
+class EntityFactory(factory.Factory):
+    id = factory.LazyFunction(uuid4)
+    is_active = True
+    created_at = factory.LazyFunction(lambda: datetime.now(timezone.utc))
+    updated_at = factory.LazyFunction(lambda: datetime.now(timezone.utc))
+
+
+class CategoryFactory(EntityFactory):
     class Meta:
         model = Category
 
-    id = factory.LazyFunction(uuid4)
     name = factory.Faker("word")
     description = factory.Faker("sentence")
-    is_active = factory.Faker("boolean")
-    created_at = factory.LazyFunction(lambda: datetime.now(timezone.utc))
-    updated_at = factory.LazyFunction(lambda: datetime.now(timezone.utc))

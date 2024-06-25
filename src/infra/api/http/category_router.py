@@ -1,8 +1,10 @@
-from fastapi import HTTPException, APIRouter, Query
+from fastapi import APIRouter, Query, Response
+from pydantic import ValidationError
 
-from src.application.category.list_category import ListCategory
+from src.application.category.exceptions import SearchError
+from src.application.category.list_category import ListCategory, SortableFields
 from src.application.listing import ListOutput
-from src.infra.api.models import Category
+from src.domain.category.category import Category
 from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
 from src.infra.elasticsearch.client import get_elasticsearch
 
@@ -18,14 +20,21 @@ def list_categories(
     direction: str = Query("asc", regex="^(asc|desc)$", description="Sort direction (asc or desc)"),
 ):
     list_use_case = ListCategory(repository=CategoryElasticRepository())
-    input_data = ListCategory.Input(
-        search=search,
-        page=page,
-        per_page=per_page,
-        sort=sort,
-        direction=direction,
-    )
-    output = list_use_case.execute(input=input_data)
+    try:
+        input_data = ListCategory.Input(
+            search=search,
+            page=page,
+            per_page=per_page,
+            sort=sort or SortableFields.name,
+            direction=direction,
+        )
+    except ValidationError as validation_error:
+        return Response(status_code=400, content=validation_error.json())
+
+    try:
+        output = list_use_case.execute(input=input_data)
+    except SearchError as err:
+        return Response(status_code=500, content="error when searching categories")
     return ListOutput(data=output.data, meta=output.meta)
 
 

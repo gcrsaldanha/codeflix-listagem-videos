@@ -2,5 +2,5 @@ class InvalidCategory(Exception):
     pass
 
 
-class CategoryNotFound(Exception):
+class SearchError(Exception):
     pass

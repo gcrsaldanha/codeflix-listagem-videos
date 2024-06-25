@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from uuid import UUID
 
+from pydantic import ValidationError
 import pytest
 
 from src.application.category.tests.factories import CategoryFactory
@@ -10,7 +11,7 @@ from src.domain.category.category import Category
 
 class TestCategory:
     def test_name_must_have_less_than_255_characters(self):
-        with pytest.raises(ValueError, match="name cannot be longer than 255"):
+        with pytest.raises(ValueError, match="String should have at most 255 characters"):
             CategoryFactory(name="a" * 256)
 
     def test_create_category_with_provided_values(self):
@@ -33,16 +34,22 @@ class TestCategory:
         assert category.updated_at == now
 
     def test_cannot_create_category_with_empty_name(self):
-        with pytest.raises(ValueError, match="name cannot be empty"):
+        with pytest.raises(ValidationError) as exc_info:
             CategoryFactory(name="")
 
+        assert exc_info.value.errors()[0]["loc"] == ("name",)
+        assert exc_info.value.errors()[0]["msg"] == "String should have at least 1 character"
+
     def test_cannot_create_cateogry_with_description_longer_than_1024(self):
-        with pytest.raises(ValueError, match="description cannot be longer than 1024"):
+        with pytest.raises(ValueError, match="String should have at most 1024 characters"):
             CategoryFactory(name="Filme", description="a" * 1025)
 
-    def test_notification_groups_errors(self):
-        with pytest.raises(ValueError, match="name cannot be empty,description cannot be longer than 1024"):
+
+    def test_multiple_validation_errors(self):
+        with pytest.raises(ValueError) as exc_info:
             CategoryFactory(name="", description="a" * 1025)
+
+        assert exc_info.value.error_count() == 2
 
 
 class TestEquality:

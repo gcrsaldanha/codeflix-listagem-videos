@@ -2,10 +2,10 @@ from typing import List, Tuple
 
 from elasticsearch import Elasticsearch
 
+from src.config import DEFAULT_PAGINATION_SIZE
 from src.domain.category.category import Category
-from src.infra.elasticsearch.client import get_elasticsearch
-
 from src.domain.category.category_repository import CategoryRepository
+from src.infra.elasticsearch.client import get_elasticsearch
 
 
 class CategoryElasticRepository(CategoryRepository):
@@ -15,13 +15,15 @@ class CategoryElasticRepository(CategoryRepository):
     def save(self, category: Category) -> None:
         self.client.index(index="categories", id=str(category.id), body=self.from_domain(category))
 
-    def list(self, query: str = "") -> List[Category]:
-        result = self.client.search(index="categories", body={"query": {"match_all": {}}})
-        return [self.to_domain(hit["_source"]) for hit in result["hits"]["hits"]]
-
     def search(
-        self, search: str = None, page: int = 1, per_page: int = 10, sort: str = None, direction: str = "asc"
+        self,
+        page: int = 1,
+        per_page: int = DEFAULT_PAGINATION_SIZE,
+        search: str | None = None,
+        sort: str | None = None,
+        direction: str = "asc",
     ) -> Tuple[List[Category], int]:
+        # TODO: "who" should decide which fields are searchable? Application layer?
         if sort in {"name", "description"}:
             sort_field = f"{sort}.keyword"
         else:
@@ -47,26 +49,6 @@ class CategoryElasticRepository(CategoryRepository):
         categories = [self.to_domain(hit["_source"]) for hit in response["hits"]["hits"]]
 
         return categories, total_count
-
-    def to_domain(self, data: dict) -> Category:
-        return Category(
-            id=data["id"],
-            name=data["name"],
-            description=data["description"],
-            is_active=data["is_active"],
-            created_at=data["created_at"],
-            updated_at=data["updated_at"],
-        )
-
-    def from_domain(self, category: Category) -> dict:
-        return {
-            "id": category.id,
-            "name": category.name,
-            "description": category.description,
-            "is_active": category.is_active,
-            "created_at": category.created_at,
-            "updated_at": category.updated_at,
-        }
 
 
 """
