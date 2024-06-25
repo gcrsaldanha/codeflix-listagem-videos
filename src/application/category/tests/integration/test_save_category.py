@@ -3,7 +3,8 @@ from datetime import datetime, timezone
 from uuid import UUID
 
 from src.application.category.save_category import SaveCategory
-from src.infra.category.in_memory_category_repository import InMemoryCategoryRepository
+from src.domain.category.category import Category
+from src.infra.tests.in_memory_category_repository import InMemoryCategoryRepository
 
 
 class TestSaveCategory:
@@ -13,12 +14,14 @@ class TestSaveCategory:
         id = uuid.uuid4()
         now = datetime.now(timezone.utc)
         request = SaveCategory.Input(
-            id=id,
-            name="Filme",
-            description="Categoria para filmes",
-            is_active=True,
-            created_at=now,
-            updated_at=now,
+            Category(
+                id=id,
+                name="Filme",
+                description="Categoria para filmes",
+                is_active=True,
+                created_at=now,
+                updated_at=now,
+            )
         )
 
         response = use_case.execute(request)
@@ -39,12 +42,14 @@ class TestSaveCategory:
         id = uuid.uuid4()
         now = datetime.now(timezone.utc)
         request = SaveCategory.Input(
-            id=id,
-            name="Filme",
-            description="Categoria para filmes",
-            is_active=False,
-            created_at=now,
-            updated_at=now,
+            Category(
+                id=id,
+                name="Filme",
+                description="Categoria para filmes",
+                is_active=False,
+                created_at=now,
+                updated_at=now,
+            ),
         )
 
         response = use_case.execute(request)

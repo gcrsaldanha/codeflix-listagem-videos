@@ -14,3 +14,9 @@ class Entity(BaseModel):
     is_active: bool
 
     model_config = ConfigDict(extra="forbid", validate_assignment=True)
+
+    def __eq__(self, value: object) -> bool:
+        if isinstance(value, Entity):
+            return self.id == value.id
+        return False
+

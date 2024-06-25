@@ -11,7 +11,7 @@ T = TypeVar("T")
 class ListInput(BaseModel):
     search: str | None = None
     page: int = 1
-    per_page: int = 10
+    per_page: int = config.DEFAULT_PAGINATION_SIZE
     sort: str | None = None
     direction: str = "asc"  # TODO: constraint to asc or desc
 

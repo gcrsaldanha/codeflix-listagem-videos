@@ -7,6 +7,7 @@ from src.application.category.tests.factories import CategoryFactory
 from src.application.listing import ListOutputMeta
 from src.domain.category.category import Category
 from src.domain.category.category_repository import CategoryRepository
+from src import config
 
 
 class TestListCategory:
@@ -34,7 +35,7 @@ class TestListCategory:
     @pytest.fixture
     def mock_empty_repository(self) -> CategoryRepository:
         repository = create_autospec(CategoryRepository)
-        repository.list.return_value = []
+        repository.search.return_value = ([], 0)
         return repository
 
     @pytest.fixture
@@ -45,11 +46,14 @@ class TestListCategory:
         category_documentary: Category,
     ) -> CategoryRepository:
         repository = create_autospec(CategoryRepository)
-        repository.list.return_value = [
-            category_movie,
-            category_series,
-            category_documentary,  # Fora de "ordem" - Application que ordena
-        ]
+        repository.search.return_value = (
+            [
+                category_documentary,
+                category_movie,
+                category_series,
+            ],
+            3
+        )
         return repository
 
     def test_when_no_categories_then_return_empty_list(
@@ -63,8 +67,9 @@ class TestListCategory:
             data=[],
             meta=ListOutputMeta(
                 page=1,
-                per_page=2,
+                per_page=config.DEFAULT_PAGINATION_SIZE,
                 total=0,
+                next_page=None,
             ),
         )
 
@@ -80,73 +85,14 @@ class TestListCategory:
 
         assert response == ListCategory.Output(
             data=[
-                ListCategory.CategoryOutput(
-                    id=category_documentary.id,
-                    name=category_documentary.name,
-                    description=category_documentary.description,
-                    is_active=category_documentary.is_active,
-                    created_at=category_documentary.created_at,
-                    updated_at=category_documentary.updated_at,
-                ),
-                ListCategory.CategoryOutput(
-                    id=category_movie.id,
-                    name=category_movie.name,
-                    description=category_movie.description,
-                    is_active=category_movie.is_active,
-                    created_at=category_movie.created_at,
-                    updated_at=category_movie.updated_at,
-                ),
-                # Documentary vem antes, "empurra" o Movie para fora da página
-                # Por isso precisamos ordernar a lista de categorias antes de paginar
-                # ListCategory.CategoryOutput(
-                #     id=category_series.id,
-                #     name=category_series.name,
-                #     description=category_series.description,
-                #     is_active=category_series.is_active,
-                # ),
+                category_documentary,
+                category_movie,
+                category_series,
             ],
             meta=ListOutputMeta(
                 page=1,
-                per_page=2,
-                total=3,
-            ),
-        )
-
-    def test_fetch_page_without_elements(self, mock_populated_repository: CategoryRepository) -> None:
-        use_case = ListCategory(repository=mock_populated_repository)
-        response = use_case.execute(input=ListCategory.Input(page=3))
-
-        assert response == ListCategory.Output(
-            data=[],
-            meta=ListOutputMeta(
-                page=3,
-                per_page=2,
-                total=3,
-            ),
-        )
-
-    def test_fetch_last_page_with_elements(
-        self,
-        mock_populated_repository: CategoryRepository,
-        category_series: Category,  # Foi "empurrado" para última página
-    ) -> None:
-        use_case = ListCategory(repository=mock_populated_repository)
-        response = use_case.execute(input=ListCategory.Input(page=2))
-
-        assert response == ListCategory.Output(
-            data=[
-                ListCategory.CategoryOutput(
-                    id=category_series.id,
-                    name=category_series.name,
-                    description=category_series.description,
-                    is_active=category_series.is_active,
-                    created_at=category_series.created_at,
-                    updated_at=category_series.updated_at,
-                )
-            ],
-            meta=ListOutputMeta(
-                page=2,
-                per_page=2,
-                total=3,
+                per_page=config.DEFAULT_PAGINATION_SIZE,
+                next_page=None,
+                total_count=3,
             ),
         )
