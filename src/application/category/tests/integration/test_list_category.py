@@ -4,9 +4,7 @@ from src.application.category.list_category import ListCategory
 from src.application.category.tests.factories import CategoryFactory
 from src.application.listing import ListOutputMeta
 from src.domain.category.category import Category
-from src.infra.tests.in_memory_category_repository import (
-    InMemoryCategoryRepository,
-)
+from src.infra.elasticsearch.stub.in_memory_category_repository import InMemoryCategoryRepository
 
 
 class TestListCategory:
