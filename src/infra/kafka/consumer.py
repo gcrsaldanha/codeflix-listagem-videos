@@ -1,23 +1,22 @@
-from abc import ABC, abstractmethod
-from pydantic.dataclasses import dataclass
+import os
+from confluent_kafka import KafkaException, Consumer
 import logging
 
-from confluent_kafka import KafkaException, Consumer
-
+# Configuration for the Kafka consumer
 config = {
-    "bootstrap.servers": "kafka:19092",
+    "bootstrap.servers": os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'kafka:19092'),
     "group.id": "consumer-cluster",
-    "enable.auto.commit": False,
     "auto.offset.reset": "earliest",
 }
 topics = [
     "catalog-db.codeflix.categories",
 ]
 
+# Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
+# KafkaConsumer class encapsulates Kafka consumer logic
 class KafkaConsumer:
     def __init__(self, config: dict, topics: list[str]):
         self.__consumer = Consumer(config)
@@ -40,7 +39,10 @@ class KafkaConsumer:
         self.running = False
         self.__consumer.close()
 
-
+# Main execution block
 if __name__ == "__main__":
     consumer = KafkaConsumer(config=config, topics=topics)
-    consumer.start_consuming()
+    try:
+        consumer.start_consuming()
+    except KeyboardInterrupt:
+        consumer.stop_consuming()

@@ -78,6 +78,19 @@ curl -i -X POST -H "Accept: application/json" -H "Content-Type: application/json
 }'
 ```
 
+Topics are created now!
+
+```
+# make list-topics
+__consumer_offsets
+catalog-db
+catalog-db.codeflix.categories
+my_connect_configs
+my_connect_offsets
+my_connect_statuses
+schema-changes.catalog
+```
+
 
 ```bash
 curl -X DELETE http://localhost:8083/connectors/catalog-connector
@@ -132,7 +145,7 @@ Indica que terminou de fazer o snapshot do banco de dados.
 Verificar eventos no tópico.
 
 ```bash
-docker compose exec kafka kafka-console-consumer --bootstrap-server kafka:9092 --topic catalog-db.codeflix.categories --from-beginning
+docker compose exec -it kafka /opt/kafka/bin/kafka-console-consumer.sh --topic catalog-db.codeflix.categories --from-beginning --bootstrap-server localhost:9092
 ```
 
 ## Update table and observe changes
@@ -222,7 +235,7 @@ DELETE FROM categories WHERE id = '3';
     }
   }
 }
-``` 
+```
 
 > ENV PYTHONUNBUFFERED=1
 
@@ -245,4 +258,4 @@ Verificar no consumer que após o connector ser inicializado, ele exibe apenas a
 
 
 >  Schema changes: `make consume-events topic=schema-changes.catalog`
-> MySQL mantem o registro de todas as alterações no banco de dados, incluindo as alterações de schema bn 
+> MySQL mantem o registro de todas as alterações no banco de dados, incluindo as alterações de schema bn

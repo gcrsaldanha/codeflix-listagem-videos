@@ -103,11 +103,14 @@ services:
     ports:
       - "8083:8083"
     environment:
-      BOOTSTRAP_SERVERS: kafka:19092  # Not 9092!!!
+      KAFKA_BOOTSTRAP_SERVERS: kafka:19092  # Not 9092!!!
       GROUP_ID: "connect-cluster"
       CONFIG_STORAGE_TOPIC: my_connect_configs
       OFFSET_STORAGE_TOPIC: my_connect_offsets
       STATUS_STORAGE_TOPIC: my_connect_statuses
+      CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      STATUS_STORAGE_REPLICATION_FACTOR: 1
     depends_on:
       kafka:
         condition: service_healthy
