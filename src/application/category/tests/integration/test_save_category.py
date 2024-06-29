@@ -4,7 +4,7 @@ from uuid import UUID
 
 from src.application.category.save_category import SaveCategory
 from src.domain.category.category import Category
-from src.infra.elasticsearch.stub.in_memory_category_repository import InMemoryCategoryRepository
+from src.infra.elasticsearch.in_memory_category_repository import InMemoryCategoryRepository
 
 
 class TestSaveCategory:

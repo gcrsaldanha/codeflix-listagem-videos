@@ -1,5 +1,5 @@
 from src.application.category.tests.factories import CategoryFactory
-from src.infra.elasticsearch.stub.in_memory_category_repository import InMemoryCategoryRepository
+from src.infra.elasticsearch.in_memory_category_repository import InMemoryCategoryRepository
 
 
 class TestSave:
