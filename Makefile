@@ -18,9 +18,12 @@ produce-events:
 consume-events:
 	docker compose exec -it kafka /opt/kafka/bin/kafka-console-consumer.sh --topic $(topic) --from-beginning --bootstrap-server localhost:9092
 
-
 run-consumer:
 	docker compose up -d consumer
+
+get-connector:
+	curl localhost:8083/connectors/catalog-connector
+
 
 run-connect:
 	docker compose exec -it kafka \
@@ -33,7 +36,7 @@ shell-kafka:
 	docker compose exec kafka bash
 
 mysql:
-	docker compose exec -it mysql mysql --host 127.0.0.1 --port 3306 --user codeflix --password=codeflix
+	docker compose exec -it mysql mysql --host 127.0.0.1 --port 3306 --user codeflix --password=codeflix --database=codeflix
 
 build:
 	docker compose build

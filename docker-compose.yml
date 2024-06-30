@@ -103,7 +103,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:19092  # Not 9092!!!
+      BOOTSTRAP_SERVERS: kafka:19092  # Not 9092!!!
       GROUP_ID: "connect-cluster"
       CONFIG_STORAGE_TOPIC: my_connect_configs
       OFFSET_STORAGE_TOPIC: my_connect_offsets
@@ -116,6 +116,9 @@ services:
         condition: service_healthy
       mysql:
         condition: service_healthy
+    volumes:
+      - ./bin/init-connect.sh:/init-connect.sh
+    entrypoint: ["/bin/sh", "-c", "/init-connect.sh && /docker-entrypoint.sh"]
 
 volumes:
   kafka-data:

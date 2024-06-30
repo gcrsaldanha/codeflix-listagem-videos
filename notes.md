@@ -10,3 +10,4 @@
 - [x] Exibir o id?
 - [x] Podemos assumir que o save vai ser sempre um **PUT**?
 - Fazer retry do kafka quando criar/deletar - derrubar o servidor do kafka / circuit breaker
+- [ ] Quando eu reinicio o docker, preciso registrar o connector novamente

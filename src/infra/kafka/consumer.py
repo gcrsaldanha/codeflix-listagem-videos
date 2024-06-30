@@ -4,7 +4,7 @@ import logging
 
 # Configuration for the Kafka consumer
 config = {
-    "bootstrap.servers": os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'kafka:19092'),
+    "bootstrap.servers": os.getenv('BOOTSTRAP_SERVERS', 'kafka:19092'),
     "group.id": "consumer-cluster",
     "auto.offset.reset": "earliest",
 }
