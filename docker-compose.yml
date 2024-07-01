@@ -116,9 +116,17 @@ services:
         condition: service_healthy
       mysql:
         condition: service_healthy
+
+  connect-setup:
+    container_name: connect-setup
+    image: curlimages/curl
     volumes:
-      - ./bin/init-connect.sh:/init-connect.sh
-    entrypoint: ["/bin/sh", "-c", "/init-connect.sh && /docker-entrypoint.sh"]
+      - ./bin/connect-setup.sh:/connect-setup.sh
+    depends_on:
+      connect:
+        condition: service_started
+    command: ["sh", "-c", "/connect-setup.sh"]
+    restart: "no"
 
 volumes:
   kafka-data:

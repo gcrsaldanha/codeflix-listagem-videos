@@ -1,15 +1,8 @@
-#!/bin/bash
-
-# Wait until Kafka Connect is ready
-while ! curl -s localhost:8083; do
-  echo "Waiting for Kafka Connect to start..."
-  sleep 5
-done
-
+#!/bin/sh
 echo "Kafka Connect started. Registering Debezium connector..."
 
 # Register the Debezium connector
-curl -i -X POST -H "Accept: application/json" -H "Content-Type: application/json" localhost:8083/connectors/ -d '{
+curl -i -X POST -H "Accept: application/json" -H "Content-Type: application/json" connect:8083/connectors/ -d '{
   "name": "catalog-connector",
   "config": {
     "connector.class": "io.debezium.connector.mysql.MySqlConnector",
