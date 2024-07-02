@@ -128,6 +128,23 @@ services:
     command: ["sh", "-c", "/connect-setup.sh"]
     restart: "no"
 
+  unit-tests:
+    container_name: tests
+    build: .
+    command: ["pytest", "-v", "src/"]
+    volumes:
+      - .:/app
+
+  integration-tests:
+    container_name: tests
+    build: .
+    command: ["pytest", "-v", "tests_e2e/"]
+    volumes:
+      - .:/app
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
 volumes:
   kafka-data:
   mysql-data:
