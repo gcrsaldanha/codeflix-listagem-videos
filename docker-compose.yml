@@ -134,6 +134,8 @@ services:
     command: ["pytest", "-v", "src/"]
     volumes:
       - .:/app
+    profiles:
+      - dev
 
   integration-tests:
     container_name: tests
@@ -144,6 +146,8 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
+    profiles:
+      - dev
 
 volumes:
   kafka-data:
