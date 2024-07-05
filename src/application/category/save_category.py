@@ -25,7 +25,6 @@ class SaveCategory:
         try:
             self.repository.save(input.category)
         except ValidationError as validation_error:
-            # TODO: adapt this for GraphQL
             raise InvalidCategory(validation_error)
         else:
             return self.Output(id=input.category.id)

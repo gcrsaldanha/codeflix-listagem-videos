@@ -29,21 +29,38 @@ docker compose exec -it mysql mysql --host 127.0.0.1 --port 3306 --user codeflix
 
 Create table
 ```sql
+-- Step 1: Delete the existing table
+DROP TABLE IF EXISTS categories;
+
+-- Step 2: Create the new table
 CREATE TABLE categories (
-    id CHAR(36) PRIMARY KEY,
+    id BINARY(16) DEFAULT (UUID_TO_BIN(UUID())) NOT NULL PRIMARY KEY,
+    -- or
+    -- id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-```
 
-Insert records
-```sql
-INSERT INTO categories (id, name, description, is_active, created_at) VALUES
-('1', 'Film', 'Description 1', TRUE, NOW()),
-('2', 'Documentary', 'Description 2', TRUE, NOW());
+-- Step 3: Insert multiple rows
+INSERT INTO categories (name, description)
+VALUES
+    ('Romance', 'Categoria para Romance'),
+    ('Drama', 'Categoria para Drama'),
+    ('Film', 'Filmes longa metragem'),
+    ('Short', 'Curta-metragem');
+
+-- Step 4: Retrieve the UUID in a readable format
+SELECT
+    BIN_TO_UUID(id) as id,
+    name,
+    description,
+    is_active,
+    created_at,
+    updated_at
+FROM categories;
 ```
 
 
