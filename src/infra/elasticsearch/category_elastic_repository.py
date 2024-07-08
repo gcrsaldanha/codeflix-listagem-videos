@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Literal, Tuple
 
 from elasticsearch import Elasticsearch
 
@@ -10,10 +10,15 @@ from src.infra.elasticsearch.client import get_elasticsearch
 
 class CategoryElasticRepository(CategoryRepository):
     def __init__(self, client: Elasticsearch = None):
+        self.index = "categories"
+        self.searchable_fields = ["name", "description"]
         self.client = client or get_elasticsearch()
 
+        if not self.client.indices.exists(index=self.index):
+            self.client.indices.create(index=self.index)
+
     def save(self, category: Category) -> None:
-        self.client.index(index="categories", id=str(category.id), body=self.from_domain(category))
+        self.client.index(index=self.index, id=str(category.id), body=self.from_domain(category))
 
     def search(
         self,
@@ -21,11 +26,10 @@ class CategoryElasticRepository(CategoryRepository):
         per_page: int = DEFAULT_PAGINATION_SIZE,
         search: str | None = None,
         sort: str | None = None,
-        direction: str = "asc",
+        direction: Literal["asc", "desc"] = "asc",
     ) -> Tuple[List[Category], int]:
-        # TODO: "who" should decide which fields are searchable? Application layer?
-        if sort in {"name", "description"}:
-            sort_field = f"{sort}.keyword"
+        if sort in self.searchable_fields:
+            sort_field = f"{sort}.keyword"  # Search for exact match rather than analyzed text
         else:
             sort_field = sort
 
@@ -33,7 +37,7 @@ class CategoryElasticRepository(CategoryRepository):
             "query": {
                 "bool": {
                     "must": (
-                        [{"multi_match": {"query": search, "fields": ["name", "description"]}}]
+                        [{"multi_match": {"query": search, "fields": self.searchable_fields}}]
                         if search
                         else {"match_all": {}}
                     )
@@ -44,7 +48,7 @@ class CategoryElasticRepository(CategoryRepository):
             "sort": [{sort_field: {"order": direction}}] if sort else [],
         }
 
-        response = self.client.search(index="categories", body=query)
+        response = self.client.search(index=self.index, body=query)
         total_count = response["hits"]["total"]["value"]
         categories = [self.to_domain(hit["_source"]) for hit in response["hits"]["hits"]]
 

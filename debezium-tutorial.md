@@ -32,11 +32,11 @@ Create table
 -- Step 1: Delete the existing table
 DROP TABLE IF EXISTS categories;
 
--- Step 2: Create the new table
+-- Step 2: Create the new table with an auto-increment integer primary key and a UUID external_id
 CREATE TABLE categories (
-    id BINARY(16) DEFAULT (UUID_TO_BIN(UUID())) NOT NULL PRIMARY KEY,
-    -- or
-    -- id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    -- external_id BINARY(16) DEFAULT (UUID_TO_BIN(UUID())) NOT NULL,
+    external_id VARCHAR(36) DEFAULT (UUID()) NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     is_active BOOLEAN DEFAULT TRUE,
@@ -54,7 +54,9 @@ VALUES
 
 -- Step 4: Retrieve the UUID in a readable format
 SELECT
-    BIN_TO_UUID(id) as id,
+    id,
+    -- BIN_TO_UUID(external_id) as external_id,
+    external_id;
     name,
     description,
     is_active,

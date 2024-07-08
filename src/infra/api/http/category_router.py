@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Query, Response
 from pydantic import ValidationError
 
@@ -8,6 +9,9 @@ from src.application.listing import ListOutput
 from src.domain.category.category import Category
 from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
 from src.infra.elasticsearch.client import get_elasticsearch
+
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -35,6 +39,7 @@ def list_categories(
     try:
         output = list_use_case.execute(input=input_data)
     except SearchError as err:
+        logger.error(err, exc_info=True)
         return Response(status_code=500, content="error when searching categories")
     return ListOutput(data=output.data, meta=output.meta)
 
