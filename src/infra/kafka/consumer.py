@@ -24,7 +24,7 @@ topics = [
 ]
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("consumer")
 
 
 
@@ -82,6 +82,16 @@ class AbstractEventHandler(ABC):
     def handle_deleted(self, event: ParsedEvent) -> None:
         pass
 
+    def __call__(self, event: ParsedEvent) -> None:
+        if event.operation == Operation.CREATE:
+            self.handle_created(event)
+        elif event.operation == Operation.UPDATE:
+            self.handle_updated(event)
+        elif event.operation == Operation.DELETE:
+            self.handle_deleted(event)
+        else:
+            logger.info(f"Unknown operation: {event.operation}")
+
 
 class CategoryEventHandler(AbstractEventHandler):
     def handle_created(self, event: ParsedEvent) -> None:
@@ -107,7 +117,7 @@ class CategoryEventHandler(AbstractEventHandler):
 
 
 entity_to_handler = {
-    Category: CategoryEventHandler,
+    Category: CategoryEventHandler(),
     # CastMember: CastMemberEventHandler,
     # Genre: GenreEventHandler,
     # Video: VideoEventHandler,
@@ -139,52 +149,46 @@ class Consumer:
         parser: Callable[[bytes], ParsedEvent | None],
     ) -> None:
         self.client = client
+        self.client.subscribe(topics=topics)
         self.parser = parser
 
-    def start_consuming(self, topics: list[str]):
+    def start(self, topics: list[str]):
         logger.info("Starting consumer...")
         try:
-            self.client.subscribe(topics=topics)
             while True:
-                message = self.client.poll(timeout=1.0)
-                if message is None:
-                    continue
-                if message.error():
-                    logger.error(message.error())
-                    continue
-
-                message_data = message.value()
-                if not message_data:  # delete event send message with `None`
-                    continue
-
-                print(f"Received event: {message_data}")
-                self.consume(message_data)
-                self.client.commit(message=message)
+                self.consume()
         except KeyboardInterrupt:
             logger.info("Stopping consumer...")
-            self.stop_consuming()
+            self.stop()
         except KafkaException as e:
             logger.error(e)
         finally:
-            self.stop_consuming()
+            self.stop()
 
-    def consume(self, data: bytes) -> None:
-        parsed_event = self.parser(data)
+    def consume(self) -> None:
+        message = self.client.poll(timeout=1.0)
+        if message is None:
+            logger.info("No message received")
+            return None
+
+        if message.error():
+            logger.error("Got message with error: ", message.error())
+            return None
+
+        message_data = message.value()
+        if not message_data:  # delete event sends two messages, later with `None`
+            return None
+
+        logger.info(f"Received message with data: {message_data}")
+        parsed_event = self.parser(message_data)
         if parsed_event is None:
             logger.error("Failed to parse event from data: {data}")
             return
 
-        handler = entity_to_handler[parsed_event.entity]()
-        if parsed_event.operation == Operation.CREATE:
-            handler.handle_created(parsed_event)
-        elif parsed_event.operation == Operation.UPDATE:
-            handler.handle_updated(parsed_event)
-        elif parsed_event.operation == Operation.DELETE:
-            handler.handle_deleted(parsed_event)
-        else:
-            logger.info(f"Unknown operation: {parsed_event.operation}")
+        entity_to_handler[parsed_event.entity](parsed_event)
+        self.client.commit(message=message)
 
-    def stop_consuming(self):
+    def stop(self):
         logger.info("Closing consumer...")
         self.client.close()
 
@@ -192,4 +196,4 @@ class Consumer:
 if __name__ == "__main__":
     client = KafkaConsumer(config)
     consumer = Consumer(client=client, parser=parse_debezium_message)
-    consumer.start_consuming(topics=topics)
+    consumer.start(topics=topics)

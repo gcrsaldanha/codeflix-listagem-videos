@@ -1,3 +1,22 @@
+x-elasticsearch-base: &elasticsearch-base
+  image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+  environment:
+    - discovery.type=single-node
+    - xpack.security.enabled=false
+    # - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    # - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+    - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+    - "indices.fielddata.cache.size=5%"
+  # ulimits:
+  #   memlock:
+  #     soft: -1
+  #     hard: -1
+  healthcheck:
+    test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
+    interval: 30s
+    timeout: 10s
+    retries: 5
+
 services:
   kafka:
     container_name: kafka
@@ -76,25 +95,11 @@ services:
         condition: service_healthy
 
   elasticsearch:
+    <<: *elasticsearch-base
     container_name: elasticsearch
     hostname: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "indices.fielddata.cache.size=5%"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     ports:
       - "9200:9200"
-    healthcheck:
-        test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
-        interval: 30s
-        timeout: 10s
-        retries: 5
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
 
@@ -157,18 +162,32 @@ services:
       - .:/app
     profiles:
       - dev
+    ports:
+      - "5678:5678"  # Debug port
+
+  elasticsearch-test:
+    <<: *elasticsearch-base
+    container_name: elasticsearch-test
+    hostname: elasticsearch-test
+    ports:
+      - "9201:9200"
+    profiles:
+      - dev
 
   integration-tests:
     container_name: tests
     build: .
-    command: ["pytest", "-v", "src/tests_e2e/"]
+    command: ["pytest", "-vv", "-s", "src/tests_e2e/"]
     volumes:
       - .:/app
+    working_dir: /app
     depends_on:
-      elasticsearch:
+      elasticsearch-test:
         condition: service_healthy
     profiles:
       - dev
+    ports:
+      - "5678:5678"  # Debug port
 
 volumes:
   kafka-data:
