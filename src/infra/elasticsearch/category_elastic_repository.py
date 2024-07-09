@@ -2,6 +2,7 @@ from typing import List, Tuple
 
 from elasticsearch import Elasticsearch
 
+from src.application.category.list_category import SortableFields
 from src.application.listing import SortDirection
 from src.config import DEFAULT_PAGINATION_SIZE
 from src.domain.category.category import Category
@@ -16,7 +17,7 @@ class CategoryElasticRepository(CategoryRepository):
         :param wait_for_refresh: Wait for indexing to ensure data is available for search. Slower but consistent.
         """
         self.index = CATEGORY_INDEX
-        self.searchable_fields = ["name", "description"]
+        self.searchable_fields = list(SortableFields)
         self.client = client or get_elasticsearch()
         self.wait_for_refresh = wait_for_refresh
 
@@ -45,11 +46,6 @@ class CategoryElasticRepository(CategoryRepository):
         ):
             return [], 0
 
-        if sort in self.searchable_fields:
-            sort_field = f"{sort}.keyword"  # Search for exact match rather than analyzed text
-        else:
-            sort_field = sort
-
         query = {
             "query": {
                 "bool": {
@@ -62,7 +58,7 @@ class CategoryElasticRepository(CategoryRepository):
             },
             "from": (page - 1) * per_page,
             "size": per_page,
-            "sort": [{sort_field: {"order": direction}}] if sort else [],
+            "sort": [{f"{sort}.keyword": {"order": direction}}] if sort else [],  # Use .keyword for efficient sorting
         }
 
         response = self.client.search(index=self.index, body=query)
