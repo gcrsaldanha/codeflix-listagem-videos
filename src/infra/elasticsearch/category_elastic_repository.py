@@ -39,6 +39,12 @@ class CategoryElasticRepository(CategoryRepository):
         sort: str | None = None,
         direction: SortDirection = SortDirection.ASC,
     ) -> Tuple[List[Category], int]:
+        if (
+            not self.client.indices.exists(index=self.index)
+            or self.client.count(index=self.index, body={"query": {"match_all": {}}})["count"] == 0
+        ):
+            return [], 0
+
         if sort in self.searchable_fields:
             sort_field = f"{sort}.keyword"  # Search for exact match rather than analyzed text
         else:

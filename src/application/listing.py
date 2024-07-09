@@ -1,7 +1,7 @@
 from enum import StrEnum
 from typing import TypeVar, Generic
 
-from pydantic import BaseModel, field_serializer, Field
+from pydantic import BaseModel, computed_field, field_serializer, Field
 from pydantic_core.core_schema import SerializationInfo
 
 from src import config
@@ -27,7 +27,7 @@ class ListOutputMeta(BaseModel):
     per_page: int = config.DEFAULT_PAGINATION_SIZE
     total_count: int = 0
 
-    @property
+    @computed_field
     def next_page(self) -> int | None:
         next_page = self.page + 1
         return next_page if self.total_count > self.page * self.per_page else None
