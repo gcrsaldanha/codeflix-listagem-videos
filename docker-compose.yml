@@ -17,6 +17,13 @@ x-elasticsearch-base: &elasticsearch-base
     timeout: 10s
     retries: 5
 
+x-python-base: &python-base
+  build: .
+  environment:
+    PYTHONPATH: "/app"
+  volumes:
+    - .:/app
+
 services:
   kafka:
     container_name: kafka
@@ -68,28 +75,22 @@ services:
       - "3306:3306"
 
   fastapi:
+    <<: *python-base
     container_name: fastapi
     hostname: fastapi
-    build: .
     ports:
       - "8000:8000"
     # TODO: fastapi run for production
     command: ["fastapi", "dev", "src/infra/api/http/main.py", "--host", "0.0.0.0", "--port", "8000"]
-    volumes:
-      - .:/app
     depends_on:
       elasticsearch:
         condition: service_healthy
 
   consumer:
+    <<: *python-base
     container_name: consumer
     hostname: consumer
-    environment:
-      PYTHONPATH: "/app"
-    build: .
     command: ["python", "src/infra/kafka/consumer.py"]
-    volumes:
-      - .:/app
     depends_on:
       kafka:
         condition: service_healthy
@@ -154,17 +155,6 @@ services:
     command: ["sh", "-c", "/connect-setup.sh"]
     restart: "no"
 
-  unit-tests:
-    container_name: tests
-    build: .
-    command: ["pytest", "-vv", "-s", "src/", "--ignore=src/tests_e2e/"]
-    volumes:
-      - .:/app
-    profiles:
-      - dev
-    ports:
-      - "5678:5678"  # Debug port
-
   elasticsearch-test:
     <<: *elasticsearch-base
     container_name: elasticsearch-test
@@ -174,13 +164,19 @@ services:
     profiles:
       - dev
 
-  integration-tests:
+  unit-tests:
+    <<: *python-base
     container_name: tests
-    build: .
+    command: ["pytest", "-vv", "-s", "src/", "--ignore=src/tests_e2e/"]
+    profiles:
+      - dev
+    ports:
+      - "5678:5678"  # Debug port
+
+  integration-tests:
+    <<: *python-base
+    container_name: integration-tests
     command: ["pytest", "-vv", "-s"]
-    volumes:
-      - .:/app
-    working_dir: /app
     depends_on:
       elasticsearch-test:
         condition: service_healthy
