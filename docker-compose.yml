@@ -1,4 +1,22 @@
-version: '3'
+x-elasticsearch-base: &elasticsearch-base
+  image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+  environment:
+    - discovery.type=single-node
+    - xpack.security.enabled=false
+    # - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    # - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+    - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+    - "indices.fielddata.cache.size=5%"
+  # ulimits:
+  #   memlock:
+  #     soft: -1
+  #     hard: -1
+  healthcheck:
+    test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
+    interval: 30s
+    timeout: 10s
+    retries: 5
+
 services:
   kafka:
     container_name: kafka
@@ -55,7 +73,8 @@ services:
     build: .
     ports:
       - "8000:8000"
-    command: ["fastapi", "dev", "src/infra/api/http/main.py", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    # TODO: fastapi run for production
+    command: ["fastapi", "dev", "src/infra/api/http/main.py", "--host", "0.0.0.0", "--port", "8000"]
     volumes:
       - .:/app
     depends_on:
@@ -65,6 +84,8 @@ services:
   consumer:
     container_name: consumer
     hostname: consumer
+    environment:
+      PYTHONPATH: "/app"
     build: .
     command: ["python", "src/infra/kafka/consumer.py"]
     volumes:
@@ -74,27 +95,27 @@ services:
         condition: service_healthy
 
   elasticsearch:
+    <<: *elasticsearch-base
     container_name: elasticsearch
     hostname: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "indices.fielddata.cache.size=5%"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     ports:
       - "9200:9200"
-    healthcheck:
-        test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
-        interval: 30s
-        timeout: 10s
-        retries: 5
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
+
+  kibana:
+    container_name: kibana
+    hostname: kibana
+    image: docker.elastic.co/kibana/kibana:8.13.4
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: 'http://elasticsearch:9200'
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    profiles:
+      - dev
 
   connect:
     container_name: connect
@@ -108,11 +129,65 @@ services:
       CONFIG_STORAGE_TOPIC: my_connect_configs
       OFFSET_STORAGE_TOPIC: my_connect_offsets
       STATUS_STORAGE_TOPIC: my_connect_statuses
+      CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      STATUS_STORAGE_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8083/connectors" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     depends_on:
       kafka:
         condition: service_healthy
       mysql:
         condition: service_healthy
+
+  connect-setup:
+    container_name: connect-setup
+    image: curlimages/curl
+    volumes:
+      - ./bin/connect-setup.sh:/connect-setup.sh
+    depends_on:
+      connect:
+        condition: service_healthy
+    command: ["sh", "-c", "/connect-setup.sh"]
+    restart: "no"
+
+  unit-tests:
+    container_name: tests
+    build: .
+    command: ["pytest", "-vv", "-s", "src/", "--ignore=src/tests_e2e/"]
+    volumes:
+      - .:/app
+    profiles:
+      - dev
+    ports:
+      - "5678:5678"  # Debug port
+
+  elasticsearch-test:
+    <<: *elasticsearch-base
+    container_name: elasticsearch-test
+    hostname: elasticsearch-test
+    ports:
+      - "9201:9200"
+    profiles:
+      - dev
+
+  integration-tests:
+    container_name: tests
+    build: .
+    command: ["pytest", "-vv", "-s"]
+    volumes:
+      - .:/app
+    working_dir: /app
+    depends_on:
+      elasticsearch-test:
+        condition: service_healthy
+    profiles:
+      - dev
+    ports:
+      - "5678:5678"  # Debug port
 
 volumes:
   kafka-data:

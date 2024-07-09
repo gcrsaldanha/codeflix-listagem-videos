@@ -4,9 +4,7 @@ from src.application.category.list_category import ListCategory
 from src.application.category.tests.factories import CategoryFactory
 from src.application.listing import ListOutputMeta
 from src.domain.category.category import Category
-from src.infra.tests.in_memory_category_repository import (
-    InMemoryCategoryRepository,
-)
+from src.infra.elasticsearch.in_memory_category_repository import InMemoryCategoryRepository
 
 
 class TestListCategory:
@@ -67,9 +65,9 @@ class TestListCategory:
             meta=ListOutputMeta(
                 page=1,
                 per_page=2,
-                next_page=None,
                 total_count=3,
             ),
         )
 
         assert response == expected_output
+        assert response.meta.next_page == 2

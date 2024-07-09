@@ -29,21 +29,40 @@ docker compose exec -it mysql mysql --host 127.0.0.1 --port 3306 --user codeflix
 
 Create table
 ```sql
+-- Step 1: Delete the existing table
+DROP TABLE IF EXISTS categories;
+
+-- Step 2: Create the new table with an auto-increment integer primary key and a UUID external_id
 CREATE TABLE categories (
-    id CHAR(36) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    -- external_id BINARY(16) DEFAULT (UUID_TO_BIN(UUID())) NOT NULL,
+    external_id VARCHAR(36) DEFAULT (UUID()) NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-```
 
-Insert records
-```sql
-INSERT INTO categories (id, name, description, is_active, created_at) VALUES
-('1', 'Film', 'Description 1', TRUE, NOW()),
-('2', 'Documentary', 'Description 2', TRUE, NOW());
+-- Step 3: Insert multiple rows
+INSERT INTO categories (name, description)
+VALUES
+    ('Romance', 'Categoria para Romance'),
+    ('Drama', 'Categoria para Drama'),
+    ('Film', 'Filmes longa metragem'),
+    ('Short', 'Curta-metragem');
+
+-- Step 4: Retrieve the UUID in a readable format
+SELECT
+    id,
+    -- BIN_TO_UUID(external_id) as external_id,
+    external_id;
+    name,
+    description,
+    is_active,
+    created_at,
+    updated_at
+FROM categories;
 ```
 
 
@@ -76,6 +95,19 @@ curl -i -X POST -H "Accept: application/json" -H "Content-Type: application/json
     "schema.history.internal.kafka.topic": "schema-changes.catalog"
   }
 }'
+```
+
+Topics are created now!
+
+```
+# make list-topics
+__consumer_offsets
+catalog-db
+catalog-db.codeflix.categories
+my_connect_configs
+my_connect_offsets
+my_connect_statuses
+schema-changes.catalog
 ```
 
 
@@ -132,7 +164,7 @@ Indica que terminou de fazer o snapshot do banco de dados.
 Verificar eventos no tópico.
 
 ```bash
-docker compose exec kafka kafka-console-consumer --bootstrap-server kafka:9092 --topic catalog-db.codeflix.categories --from-beginning
+docker compose exec -it kafka /opt/kafka/bin/kafka-console-consumer.sh --topic catalog-db.codeflix.categories --from-beginning --bootstrap-server localhost:9092
 ```
 
 ## Update table and observe changes
@@ -222,7 +254,7 @@ DELETE FROM categories WHERE id = '3';
     }
   }
 }
-``` 
+```
 
 > ENV PYTHONUNBUFFERED=1
 
@@ -245,4 +277,4 @@ Verificar no consumer que após o connector ser inicializado, ele exibe apenas a
 
 
 >  Schema changes: `make consume-events topic=schema-changes.catalog`
-> MySQL mantem o registro de todas as alterações no banco de dados, incluindo as alterações de schema bn 
+> MySQL mantem o registro de todas as alterações no banco de dados, incluindo as alterações de schema bn

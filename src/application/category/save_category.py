@@ -9,7 +9,6 @@ from src.domain.category.category_repository import CategoryRepository
 
 
 class SaveCategory:
-    # Ref: https://github.com/devfullcycle/FC3-catalogo-de-videos-api-java/blob/main/application/src/main/java/com/fullcycle/catalogo/application/category/save/SaveCategoryUseCase.java
     def __init__(self, repository: CategoryRepository):
         self.repository = repository
 
@@ -25,7 +24,6 @@ class SaveCategory:
         try:
             self.repository.save(input.category)
         except ValidationError as validation_error:
-            # TODO: adapt this for GraphQL
             raise InvalidCategory(validation_error)
         else:
             return self.Output(id=input.category.id)

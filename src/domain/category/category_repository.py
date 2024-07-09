@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, List
 
+from src.application.listing import SortDirection
 from src.config import DEFAULT_PAGINATION_SIZE
 from src.domain.category.category import Category
 
@@ -17,7 +18,7 @@ class CategoryRepository(ABC):
         per_page: int = DEFAULT_PAGINATION_SIZE,
         search: str | None = None,
         sort: str | None = None,
-        direction: str = "asc",
+        direction: SortDirection = SortDirection.ASC,
     ) -> Tuple[List[Category], int]:
         raise NotImplementedError
 
