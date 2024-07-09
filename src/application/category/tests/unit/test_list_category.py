@@ -52,7 +52,7 @@ class TestListCategory:
                 category_movie,
                 category_series,
             ],
-            3
+            3,
         )
         return repository
 
@@ -68,8 +68,7 @@ class TestListCategory:
             meta=ListOutputMeta(
                 page=1,
                 per_page=config.DEFAULT_PAGINATION_SIZE,
-                total=0,
-                next_page=None,
+                total_count=0,
             ),
         )
 
@@ -92,7 +91,6 @@ class TestListCategory:
             meta=ListOutputMeta(
                 page=1,
                 per_page=config.DEFAULT_PAGINATION_SIZE,
-                next_page=None,
                 total_count=3,
             ),
         )

@@ -1,4 +1,3 @@
-import math
 from typing import List
 
 from src.application.listing import SortDirection
@@ -8,7 +7,7 @@ from src.domain.category.category_repository import CategoryRepository
 
 
 class InMemoryCategoryRepository(CategoryRepository):
-    def __init__(self, categories: list[Category] = None):
+    def __init__(self, categories: list[Category] | None = None):
         self.categories: list[Category] = categories or []
 
     def save(self, category: Category) -> None:

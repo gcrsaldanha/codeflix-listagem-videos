@@ -1,23 +1,19 @@
-from curses import meta
 from datetime import datetime
 from fastapi.testclient import TestClient
 from src.infra.api.http.category_router import get_repository
 from src.infra.api.http.main import app
-from typing import Generator, Iterator
+from typing import Iterator
 from elasticsearch import Elasticsearch
 import pytest
-from testcontainers.elasticsearch import ElasticSearchContainer
 
 from src.application.category.list_category import ListCategory
 from src.application.category.save_category import SaveCategory
 from src.application.category.tests.factories import CategoryFactory
 from src.application.listing import ListOutputMeta
-from src.domain.category.category import Category
 from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
 from src.infra.elasticsearch.client import INDEXES, get_elasticsearch
 
 ELASTICSEARCH_HOST = "elasticsearch-test"  # from docker-compose.yml
-# ELASTICSEARCH_HOST = "localhost"  # if running tests from host machine
 
 
 def setup_elasticsearch():

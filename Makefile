@@ -40,3 +40,9 @@ mysql:
 
 build:
 	docker compose build
+
+test:
+	docker compose run --rm integration-tests
+
+unit:
+	docker compose run --rm unit-tests

@@ -177,7 +177,7 @@ services:
   integration-tests:
     container_name: tests
     build: .
-    command: ["pytest", "-vv", "-s", "src/tests_e2e/"]
+    command: ["pytest", "-vv", "-s"]
     volumes:
       - .:/app
     working_dir: /app

@@ -1,8 +1,7 @@
 from enum import StrEnum
 from typing import TypeVar, Generic
 
-from pydantic import BaseModel, computed_field, field_serializer, Field
-from pydantic_core.core_schema import SerializationInfo
+from pydantic import BaseModel, computed_field, Field
 
 from src import config
 

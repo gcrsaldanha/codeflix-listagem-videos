@@ -7,13 +7,13 @@ from src.domain.category.category_repository import CategoryRepository
 
 
 class SortableFields(StrEnum):
-    name = "name"
-    description = "description"
+    NAME = "name"
+    DESCRIPTION = "description"
 
 
 class ListCategory:
     class Input(ListInput):
-        sort: SortableFields = SortableFields.name
+        sort: SortableFields = SortableFields.NAME
 
     class Output(ListOutput[Category]):
         pass

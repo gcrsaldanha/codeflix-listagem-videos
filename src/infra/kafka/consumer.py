@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import StrEnum
-from typing import Callable, Literal, Type
+from typing import Callable, Type
 from pydantic.dataclasses import dataclass
-from decimal import Decimal
 import json
 import os
 from confluent_kafka import KafkaException, Consumer as KafkaConsumer, Message
@@ -15,7 +14,7 @@ from src.infra.elasticsearch.category_elastic_repository import CategoryElasticR
 
 # Configuration for the Kafka consumer
 config = {
-    "bootstrap.servers": os.getenv('BOOTSTRAP_SERVERS', 'kafka:19092'),
+    "bootstrap.servers": os.getenv("BOOTSTRAP_SERVERS", "kafka:19092"),
     "group.id": "consumer-cluster",
     "auto.offset.reset": "earliest",
 }
@@ -25,7 +24,6 @@ topics = [
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("consumer")
-
 
 
 class AbstractClient(ABC):
@@ -45,6 +43,10 @@ class AbstractClient(ABC):
     def commit(self, message: Message):
         pass
 
+    @abstractmethod
+    def subscribe(self, topics: list):
+        pass
+
 
 class Operation(StrEnum):
     CREATE = "c"
@@ -58,7 +60,6 @@ class ParsedEvent:
     entity: Type[Category]  # Add other entities: CastMember, Genre, Video
     operation: Operation
     payload: dict
-
 
 
 table_to_entity = {
@@ -98,12 +99,12 @@ class CategoryEventHandler(AbstractEventHandler):
         print(f"Category payload: {event.payload}")
         input = SaveCategory.Input(
             category=Category(
-                id=event.payload['external_id'],
-                name=event.payload['name'],
-                description=event.payload['description'],
-                created_at=event.payload['created_at'],
-                updated_at=event.payload['updated_at'],
-                is_active=event.payload['is_active'],
+                id=event.payload["external_id"],
+                name=event.payload["name"],
+                description=event.payload["description"],
+                created_at=event.payload["created_at"],
+                updated_at=event.payload["updated_at"],
+                is_active=event.payload["is_active"],
             )
         )
         use_case = SaveCategory(repository=CategoryElasticRepository())
@@ -126,15 +127,15 @@ entity_to_handler = {
 
 def parse_debezium_message(data: bytes) -> ParsedEvent | None:
     try:
-        data = json.loads(data.decode('utf-8'))
+        json_data = json.loads(data.decode("utf-8"))
     except json.JSONDecodeError as e:
         logger.error(e)
         return None
 
     try:
-        entity = table_to_entity[data["payload"]["source"]["table"]]
-        operation = Operation(data["payload"]["op"])
-        payload = data["payload"]["after"] if operation != Operation.DELETE else data["payload"]["before"]
+        entity = table_to_entity[json_data["payload"]["source"]["table"]]
+        operation = Operation(json_data["payload"]["op"])
+        payload = json_data["payload"]["after"] if operation != Operation.DELETE else json_data["payload"]["before"]
     except (KeyError, ValueError) as e:
         logger.error(e)
         return None

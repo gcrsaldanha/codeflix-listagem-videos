@@ -1,4 +1,4 @@
-from typing import List, Literal, Tuple
+from typing import List, Tuple
 
 from elasticsearch import Elasticsearch
 
@@ -10,7 +10,7 @@ from src.infra.elasticsearch.client import CATEGORY_INDEX, get_elasticsearch
 
 
 class CategoryElasticRepository(CategoryRepository):
-    def __init__(self, client: Elasticsearch = None, wait_for_refresh: bool = False):
+    def __init__(self, client: Elasticsearch | None = None, wait_for_refresh: bool = False):
         """
         :param client: Elasticsearch client
         :param wait_for_refresh: Wait for indexing to ensure data is available for search. Slower but consistent.

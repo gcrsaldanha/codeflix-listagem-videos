@@ -14,18 +14,20 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+
 def get_repository() -> CategoryElasticRepository:
     return CategoryElasticRepository(client=get_elasticsearch())
+
 
 @router.get("/", response_model=ListOutput)
 def list_categories(
     search: str | None = Query(None, description="Search term for name or description"),
     page: int = Query(1, ge=1, description="Page number"),
     per_page: int = Query(config.DEFAULT_PAGINATION_SIZE, ge=1, le=100, description="Number of items per page"),
-    sort: SortableFields | None = Query(SortableFields.name, description="Field to sort by"),
+    sort: SortableFields = Query(SortableFields.NAME, description="Field to sort by"),
     direction: SortDirection = Query(SortDirection.ASC, description="Sort direction (asc or desc)"),
-    repository: CategoryElasticRepository = Depends(get_repository)
-) -> ListOutput:
+    repository: CategoryElasticRepository = Depends(get_repository),
+) -> ListOutput | Response:
     # TODO: common parameters as Dependency - see https://fastapi.tiangolo.com/tutorial/dependencies/#create-a-dependency-or-dependable
     list_use_case = ListCategory(repository=repository)
     try:
@@ -48,10 +50,7 @@ def list_categories(
 
 
 @router.post("/", response_model=Category)
-def save_category(
-    category: Category,
-    repository: CategoryElasticRepository = Depends(get_repository)
-) -> Category:
+def save_category(category: Category, repository: CategoryElasticRepository = Depends(get_repository)) -> Category:
     data = {
         "id": category.id,
         "name": category.name,
