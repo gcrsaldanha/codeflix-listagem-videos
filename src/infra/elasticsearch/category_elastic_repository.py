@@ -2,23 +2,34 @@ from typing import List, Literal, Tuple
 
 from elasticsearch import Elasticsearch
 
+from src.application.listing import SortDirection
 from src.config import DEFAULT_PAGINATION_SIZE
 from src.domain.category.category import Category
 from src.domain.category.category_repository import CategoryRepository
-from src.infra.elasticsearch.client import get_elasticsearch
+from src.infra.elasticsearch.client import CATEGORY_INDEX, get_elasticsearch
 
 
 class CategoryElasticRepository(CategoryRepository):
-    def __init__(self, client: Elasticsearch = None):
-        self.index = "categories"
+    def __init__(self, client: Elasticsearch = None, wait_for_refresh: bool = False):
+        """
+        :param client: Elasticsearch client
+        :param wait_for_refresh: Wait for indexing to ensure data is available for search. Slower but consistent.
+        """
+        self.index = CATEGORY_INDEX
         self.searchable_fields = ["name", "description"]
         self.client = client or get_elasticsearch()
+        self.wait_for_refresh = wait_for_refresh
 
         if not self.client.indices.exists(index=self.index):
             self.client.indices.create(index=self.index)
 
     def save(self, category: Category) -> None:
-        self.client.index(index=self.index, id=str(category.id), body=self.from_domain(category))
+        self.client.index(
+            index=self.index,
+            id=str(category.id),
+            body=self.from_domain(category),
+            refresh="wait_for" if self.wait_for_refresh else False,
+        )
 
     def search(
         self,
@@ -26,7 +37,7 @@ class CategoryElasticRepository(CategoryRepository):
         per_page: int = DEFAULT_PAGINATION_SIZE,
         search: str | None = None,
         sort: str | None = None,
-        direction: Literal["asc", "desc"] = "asc",
+        direction: SortDirection = SortDirection.ASC,
     ) -> Tuple[List[Category], int]:
         if sort in self.searchable_fields:
             sort_field = f"{sort}.keyword"  # Search for exact match rather than analyzed text

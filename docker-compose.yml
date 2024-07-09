@@ -157,7 +157,7 @@ services:
   unit-tests:
     container_name: tests
     build: .
-    command: ["pytest", "-vv", "src/", "--ignore=src/tests_e2e/"]
+    command: ["pytest", "-vv", "-s", "src/", "--ignore=src/tests_e2e/"]
     volumes:
       - .:/app
     profiles:

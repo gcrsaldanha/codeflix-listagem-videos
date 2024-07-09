@@ -5,7 +5,7 @@ from pydantic import ValidationError
 from src import config
 from src.application.category.exceptions import SearchError
 from src.application.category.list_category import ListCategory, SortableFields
-from src.application.listing import ListOutput
+from src.application.listing import ListOutput, SortDirection
 from src.domain.category.category import Category
 from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
 from src.infra.elasticsearch.client import get_elasticsearch
@@ -22,7 +22,7 @@ def list_categories(
     page: int = Query(1, ge=1, description="Page number"),
     per_page: int = Query(config.DEFAULT_PAGINATION_SIZE, ge=1, le=100, description="Number of items per page"),
     sort: str | None = Query(None, description="Field to sort by"),
-    direction: str = Query("asc", regex="^(asc|desc)$", description="Sort direction (asc or desc)"),
+    direction: str = Query(SortDirection, regex="^(asc|desc)$", description="Sort direction (asc or desc)"),
 ):
     list_use_case = ListCategory(repository=CategoryElasticRepository())
     try:

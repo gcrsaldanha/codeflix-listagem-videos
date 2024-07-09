@@ -65,9 +65,9 @@ class TestListCategory:
             meta=ListOutputMeta(
                 page=1,
                 per_page=2,
-                next_page=None,
                 total_count=3,
             ),
         )
 
         assert response == expected_output
+        assert response.meta.next_page == 2
