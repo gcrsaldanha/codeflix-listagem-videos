@@ -80,10 +80,17 @@ services:
     hostname: fastapi
     environment:
       ELASTICSEARCH_HOST: "http://elasticsearch:9200"
+      ENVIRONMENT: "${ENVIRONMENT:-development}"  # Default to development if not set
     ports:
       - "8000:8000"
-    # TODO: fastapi run for production
-    command: ["fastapi", "dev", "src/infra/api/http/main.py", "--host", "0.0.0.0", "--port", "8000"]
+    command: >
+      sh -c '
+      echo "Starting FastAPI in $$ENVIRONMENT environment";
+      if [ "$$ENVIRONMENT" = "production" ]; then
+        fastapi run src/infra/api/http/main.py --host 0.0.0.0 --port 8000;
+      else
+        fastapi dev src/infra/api/http/main.py --host 0.0.0.0 --port 8000 --reload;
+      fi'
     depends_on:
       elasticsearch:
         condition: service_healthy
