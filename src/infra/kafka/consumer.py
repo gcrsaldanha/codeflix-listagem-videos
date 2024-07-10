@@ -21,7 +21,7 @@ config = {
 }
 topics = [
     "catalog-db.codeflix.categories",
-    # "catalog-db.codeflix.genres",
+    "catalog-db.codeflix.genres",
     # "catalog-db.codeflix.cast_members",
     # "catalog-db.codeflix.videos",
 ]
@@ -29,8 +29,8 @@ topics = [
 # Similar to a "router" -> calls proper handler, each handler will call its specific method according to operation
 entity_to_handler: dict[Type[Entity], Type[AbstractEventHandler]] = {
     Category: CategoryEventHandler,
+    Genre: GenreEventHandler,
     # CastMember: CastMemberEventHandler,
-    # Genre: GenreEventHandler,
     # Video: VideoEventHandler,
 }
 
