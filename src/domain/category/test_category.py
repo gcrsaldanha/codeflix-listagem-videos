@@ -40,10 +40,9 @@ class TestCategory:
         assert exc_info.value.errors()[0]["loc"] == ("name",)
         assert exc_info.value.errors()[0]["msg"] == "String should have at least 1 character"
 
-    def test_cannot_create_cateogry_with_description_longer_than_1024(self):
+    def test_cannot_create_category_with_description_longer_than_1024(self):
         with pytest.raises(ValueError, match="String should have at most 1024 characters"):
             CategoryFactory(name="Filme", description="a" * 1025)
-
 
     def test_multiple_validation_errors(self):
         with pytest.raises(ValueError) as exc_info:
