@@ -1,5 +1,5 @@
 - [ ] Como lidar com `is_active`?
-
+- [ ] https://hub.docker.com/r/confluentinc/cp-enterprise-control-center
 
 - [x] O SaveCategory use case só vai ser chamado pelo nosso Kafka, correto?
 - [x] Gateway vs Repository -> gateway porque não é agregado

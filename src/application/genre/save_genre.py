@@ -4,17 +4,17 @@ from uuid import UUID
 from pydantic import ValidationError
 
 from src.application.exceptions import InvalidEntity
-from src.domain.category.category import Category
-from src.domain.category.category_repository import CategoryRepository
+from src.domain.genre.genre import Genre
+from src.domain.genre.genre_repository import GenreRepository
 
 
-class SaveCategory:
-    def __init__(self, repository: CategoryRepository):
+class SaveGenre:
+    def __init__(self, repository: GenreRepository):
         self.repository = repository
 
     @dataclass
     class Input:
-        category: Category
+        genre: Genre
 
     @dataclass
     class Output:
@@ -22,8 +22,8 @@ class SaveCategory:
 
     def execute(self, input: Input) -> Output:
         try:
-            self.repository.save(input.category)
+            self.repository.save(input.genre)
         except ValidationError as validation_error:
             raise InvalidEntity(validation_error)
         else:
-            return self.Output(id=input.category.id)
+            return self.Output(id=input.genre.id)

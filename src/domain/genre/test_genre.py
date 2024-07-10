@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 import pytest
 from pydantic import ValidationError
 
-from src.application.category.tests.factories import GenreFactory, CategoryFactory
+from src.domain.factories import GenreFactory, CategoryFactory
 from src.domain.genre.genre import Genre
 
 

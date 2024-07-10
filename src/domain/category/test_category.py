@@ -1,11 +1,10 @@
 import uuid
 from datetime import datetime, timezone
-from uuid import UUID
 
 from pydantic import ValidationError
 import pytest
 
-from src.application.category.tests.factories import CategoryFactory
+from src.domain.factories import CategoryFactory
 from src.domain.category.category import Category
 
 

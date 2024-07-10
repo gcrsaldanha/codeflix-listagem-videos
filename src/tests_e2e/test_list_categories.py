@@ -10,7 +10,7 @@ import pytest
 
 from src.application.category.list_category import ListCategory
 from src.application.category.save_category import SaveCategory
-from src.application.category.tests.factories import CategoryFactory
+from src.domain.factories import CategoryFactory
 from src.application.listing import ListOutputMeta
 from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
 from src.infra.elasticsearch.client import INDEXES, get_elasticsearch

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Query, Response
 from pydantic import ValidationError
 
 from src import config
-from src.application.category.exceptions import SearchError
+from src.application.exceptions import SearchError
 from src.application.category.list_category import ListCategory, SortableFields
 from src.application.listing import ListOutput, SortDirection
 from src.domain.category.category import Category

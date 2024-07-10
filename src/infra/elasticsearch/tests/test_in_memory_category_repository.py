@@ -1,4 +1,4 @@
-from src.application.category.tests.factories import CategoryFactory
+from src.domain.factories import CategoryFactory
 from src.infra.elasticsearch.in_memory_category_repository import InMemoryCategoryRepository
 
 
