@@ -1,3 +1,5 @@
+import logging
+
 from elasticsearch import Elasticsearch
 
 from src.config import ELASTICSEARCH_HOST

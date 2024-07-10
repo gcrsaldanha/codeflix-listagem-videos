@@ -6,8 +6,10 @@ import logging
 from src.config import KAFKA_HOST
 from src.domain.category.category import Category
 from src.domain.entity import Entity
+from src.domain.genre.genre import Genre
 from src.infra.kafka.abstract_event_handler import AbstractEventHandler
 from src.infra.kafka.category_event_handler import CategoryEventHandler
+from src.infra.kafka.genre_event_handler import GenreEventHandler
 from src.infra.kafka.parser import ParsedEvent, parse_debezium_message
 
 logging.basicConfig(level=logging.INFO)

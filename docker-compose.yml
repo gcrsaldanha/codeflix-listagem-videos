@@ -55,6 +55,17 @@ services:
     volumes:
       - kafka-data:/var/lib/kafka
 
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8080:8080
+    environment:
+      DYNAMIC_CONFIG_ENABLED: true
+    volumes:
+      - kui-data:/etc/kafkaui/
+
+
   mysql:
     container_name: mysql
     hostname: mysql
@@ -102,8 +113,11 @@ services:
     command: ["python", "src/infra/kafka/consumer.py"]
     environment:
       KAFKA_HOST: "kafka:19092"
+      ELASTICSEARCH_HOST: "http://elasticsearch:9200"
     depends_on:
       kafka:
+        condition: service_healthy
+      elasticsearch:
         condition: service_healthy
 
   elasticsearch:
@@ -202,3 +216,4 @@ volumes:
   kafka-data:
   mysql-data:
   elasticsearch-data:
+  kui-data:

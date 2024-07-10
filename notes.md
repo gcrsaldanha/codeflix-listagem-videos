@@ -2,8 +2,6 @@
 - [ ] ElasticSearch Sink? Na verdade estou fazendo manualmente a inserção através de um listener.
   - Diferente: https://www.youtube.com/watch?v=qO4JL38_F1s&list=PL5aY_NrL1rjt_AZxj11kQjiTNLGg4ZaZA&index=6&t=1460s
 
-- [ ] https://hub.docker.com/r/confluentinc/cp-enterprise-control-center
-
 - [x] O SaveCategory use case só vai ser chamado pelo nosso Kafka, correto?
 - [x] Gateway vs Repository -> gateway porque não é agregado
 - [x] Docker compose
