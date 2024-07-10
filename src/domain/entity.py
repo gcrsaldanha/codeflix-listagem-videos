@@ -20,3 +20,9 @@ class Entity(BaseModel):
             return self.id == value.id
         return False
 
+    @classmethod
+    def from_dict(cls, data: dict) -> "Entity":
+        return cls(**data)
+
+    def to_dict(self) -> dict:
+        return self.model_dump()

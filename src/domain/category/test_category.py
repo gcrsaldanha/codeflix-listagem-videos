@@ -69,3 +69,46 @@ class TestEquality:
         dummy.id = common_id
 
         assert category != dummy
+
+
+class TestToDict:
+    def test_to_dict(self):
+        category = CategoryFactory(
+            name="Filme",
+            description="Filmes em geral",
+            is_active=True,
+        )
+        category_dict = category.to_dict()
+
+        assert category_dict["id"] == category.id
+        assert category_dict["name"] == "Filme"
+        assert category_dict["description"] == "Filmes em geral"
+        assert category_dict["is_active"] is True
+        assert category_dict["created_at"] == category.created_at
+        assert category_dict["updated_at"] == category.updated_at
+        assert isinstance(category_dict["created_at"], datetime)
+        assert isinstance(category_dict["updated_at"], datetime)
+
+
+class TestFromDict:
+    def test_from_dict(self):
+        id = uuid.uuid4()
+        category_dict = {
+            "id": id,
+            "name": "Filme",
+            "description": "Filmes em geral",
+            "is_active": True,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        }
+
+        category = Category.from_dict(category_dict)
+
+        assert category.id == id
+        assert category.name == "Filme"
+        assert category.description == "Filmes em geral"
+        assert category.is_active is True
+        assert category.created_at == category_dict["created_at"]
+        assert category.updated_at == category_dict["updated_at"]
+        assert isinstance(category.created_at, datetime)
+        assert isinstance(category.updated_at, datetime)

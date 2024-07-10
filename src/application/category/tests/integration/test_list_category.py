@@ -46,9 +46,9 @@ class TestListCategory:
         category_documentary: Category,
     ) -> None:
         repository = InMemoryCategoryRepository()
-        repository.save(category=category_movie)
-        repository.save(category=category_series)
-        repository.save(category=category_documentary)
+        repository.save(category_movie)
+        repository.save(category_series)
+        repository.save(category_documentary)
 
         use_case = ListCategory(repository=repository)
         response = use_case.execute(

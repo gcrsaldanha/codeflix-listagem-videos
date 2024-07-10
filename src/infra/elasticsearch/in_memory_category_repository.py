@@ -10,11 +10,11 @@ class InMemoryCategoryRepository(CategoryRepository):
     def __init__(self, categories: list[Category] | None = None):
         self.categories: list[Category] = categories or []
 
-    def save(self, category: Category) -> None:
-        if category not in self.categories:
-            self.categories.append(category)
+    def save(self, entity: Category) -> None:
+        if entity not in self.categories:
+            self.categories.append(entity)
         else:
-            self.categories[self.categories.index(category)] = category
+            self.categories[self.categories.index(entity)] = entity
 
     def search(
         self,
@@ -24,18 +24,20 @@ class InMemoryCategoryRepository(CategoryRepository):
         sort: str | None = None,
         direction: SortDirection = SortDirection.ASC,
     ) -> tuple[list[Category], int]:
-        categories: List[Category] = [cat for cat in self.categories]
+        categories: List[Category] = [category for category in self.categories]
         total_count = len(categories)
 
         if search:
             categories = [
-                cat
-                for cat in categories
-                if search.upper() in cat.name.upper() or search.upper() in cat.description.upper()
+                category
+                for category in categories
+                if search.upper() in category.name.upper() or search.upper() in category.description.upper()
             ]
 
         if sort:
-            categories = sorted(categories, key=lambda cat: getattr(cat, sort), reverse=direction == SortDirection.DESC)
+            categories = sorted(
+                categories, key=lambda category: getattr(category, sort), reverse=direction == SortDirection.DESC
+            )
 
-        categories_page = categories[(page - 1) * per_page : (page * per_page)]
-        return categories_page, total_count
+        ent_page = categories[(page - 1) * per_page : (page * per_page)]
+        return ent_page, total_count

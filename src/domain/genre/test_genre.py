@@ -69,3 +69,48 @@ class TestEquality:
         dummy.id = common_id
 
         assert genre != dummy
+
+
+class TestToDict:
+    def test_to_dict(self):
+        category_film = CategoryFactory(name="Film")
+        category_documentary = CategoryFactory(name="Documentary")
+        genre = GenreFactory(name="Drama", categories={category_film.id, category_documentary.id})
+        genre_dict = genre.to_dict()
+
+        assert genre_dict["id"] == genre.id
+        assert genre_dict["name"] == "Drama"
+        assert genre_dict["categories"] == {category_film.id, category_documentary.id}
+        assert genre_dict["is_active"] is True
+        assert genre_dict["created_at"] == genre.created_at
+        assert genre_dict["updated_at"] == genre.updated_at
+        assert isinstance(genre_dict["created_at"], datetime)
+        assert isinstance(genre_dict["updated_at"], datetime)
+
+
+class TestFromDict:
+    def test_from_dict(self):
+        category_film_id = uuid.uuid4()
+        category_documentary_id = uuid.uuid4()
+        genre_id = uuid.uuid4()
+        now_as_str = "2021-08-01T00:00:00Z"
+
+        genre_dict = {
+            "id": genre_id,
+            "name": "Drama",
+            "categories": {category_film_id, category_documentary_id},
+            "is_active": True,
+            "created_at": now_as_str,
+            "updated_at": now_as_str,
+        }
+
+        expected_genre = Genre(
+            id=genre_dict["id"],
+            name="Drama",
+            is_active=True,
+            created_at=datetime.fromisoformat(now_as_str),
+            updated_at=datetime.fromisoformat(now_as_str),
+            categories={category_film_id, category_documentary_id},
+        )
+
+        assert Genre.from_dict(data=genre_dict) == expected_genre

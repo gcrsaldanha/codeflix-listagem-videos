@@ -21,11 +21,11 @@ class CategoryElasticRepository(CategoryRepository):
         self.client = client or get_elasticsearch()
         self.wait_for_refresh = wait_for_refresh
 
-    def save(self, category: Category) -> None:
+    def save(self, entity: Category) -> None:
         self.client.index(
             index=self.index,
-            id=str(category.id),
-            body=self.from_domain(category),
+            id=str(entity.id),
+            body=entity.to_dict(),
             refresh="wait_for" if self.wait_for_refresh else False,
         )
 
@@ -60,7 +60,7 @@ class CategoryElasticRepository(CategoryRepository):
 
         response = self.client.search(index=self.index, body=query)
         total_count = response["hits"]["total"]["value"]
-        categories = [self.to_domain(hit["_source"]) for hit in response["hits"]["hits"]]
+        categories = [Category.from_dict(hit["_source"]) for hit in response["hits"]["hits"]]
 
         return categories, total_count
 
