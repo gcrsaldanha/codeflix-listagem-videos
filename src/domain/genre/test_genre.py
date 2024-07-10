@@ -50,6 +50,11 @@ class TestGenre:
 
         assert exc_info.value.error_count() == 2
 
+    def test_create_genre_without_categories(self):
+        genre = GenreFactory(categories=set())
+
+        assert genre.categories == set()
+
 
 class TestEquality:
     def test_when_genres_have_same_id_they_are_equal(self):

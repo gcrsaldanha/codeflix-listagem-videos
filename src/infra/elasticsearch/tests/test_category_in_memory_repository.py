@@ -1,10 +1,10 @@
 from src.domain.factories import CategoryFactory
-from src.infra.elasticsearch.in_memory_category_repository import InMemoryCategoryRepository
+from src.infra.elasticsearch.category_in_memory_repository import CategoryInMemoryRepository
 
 
 class TestSave:
     def test_save_add_category_if_does_not_exist(self):
-        repository = InMemoryCategoryRepository()
+        repository = CategoryInMemoryRepository()
         category = CategoryFactory(
             name="Filme",
             description="Categoria para filmes",
@@ -16,7 +16,7 @@ class TestSave:
         assert repository.categories[0] == category
 
     def test_save_update_category_if_already_exists(self):
-        repository = InMemoryCategoryRepository()
+        repository = CategoryInMemoryRepository()
         category = CategoryFactory(
             name="Filme",
             description="Categoria para filmes",
@@ -32,7 +32,7 @@ class TestSave:
 
 class TestSearch:
     def test_search_categories(self):
-        repository = InMemoryCategoryRepository()
+        repository = CategoryInMemoryRepository()
         category = CategoryFactory(
             name="Filme",
             description="Categoria para filmes",
@@ -46,7 +46,7 @@ class TestSearch:
         assert total_count == 1
 
     def test_search_categories_with_no_results(self):
-        repository = InMemoryCategoryRepository()
+        repository = CategoryInMemoryRepository()
         category = CategoryFactory(
             name="Filme",
             description="Categoria para filmes",

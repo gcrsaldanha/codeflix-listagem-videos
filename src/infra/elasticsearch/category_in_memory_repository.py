@@ -6,7 +6,7 @@ from src.domain.category.category import Category
 from src.domain.category.category_repository import CategoryRepository
 
 
-class InMemoryCategoryRepository(CategoryRepository):
+class CategoryInMemoryRepository(CategoryRepository):
     def __init__(self, categories: list[Category] | None = None):
         self.categories: list[Category] = categories or []
 

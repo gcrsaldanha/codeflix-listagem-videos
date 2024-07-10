@@ -4,12 +4,12 @@ from uuid import UUID
 
 from src.application.category.save_category import SaveCategory
 from src.domain.category.category import Category
-from src.infra.elasticsearch.in_memory_category_repository import InMemoryCategoryRepository
+from src.infra.elasticsearch.category_in_memory_repository import CategoryInMemoryRepository
 
 
 class TestSaveCategory:
     def test_when_category_does_not_exist_then_create_it(self):
-        repository = InMemoryCategoryRepository()
+        repository = CategoryInMemoryRepository()
         use_case = SaveCategory(repository=repository)
         id = uuid.uuid4()
         now = datetime.now(timezone.utc)
@@ -37,7 +37,7 @@ class TestSaveCategory:
         assert persisted_category.is_active is True
 
     def test_save_inactive_category_with_valid_data(self):
-        repository = InMemoryCategoryRepository()
+        repository = CategoryInMemoryRepository()
         use_case = SaveCategory(repository=repository)
         id = uuid.uuid4()
         now = datetime.now(timezone.utc)

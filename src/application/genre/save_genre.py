@@ -9,7 +9,10 @@ from src.domain.genre.genre_repository import GenreRepository
 
 
 class SaveGenre:
-    def __init__(self, repository: GenreRepository):
+    def __init__(
+        self,
+        repository: GenreRepository,
+    ) -> None:
         self.repository = repository
 
     @dataclass
