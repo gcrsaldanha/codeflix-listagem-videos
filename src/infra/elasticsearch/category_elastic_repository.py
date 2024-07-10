@@ -21,9 +21,6 @@ class CategoryElasticRepository(CategoryRepository):
         self.client = client or get_elasticsearch()
         self.wait_for_refresh = wait_for_refresh
 
-        if not self.client.indices.exists(index=self.index):
-            self.client.indices.create(index=self.index)
-
     def save(self, category: Category) -> None:
         self.client.index(
             index=self.index,

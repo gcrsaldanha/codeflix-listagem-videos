@@ -1,4 +1,5 @@
 import logging
+
 from fastapi import APIRouter, Depends, Query, Response
 from pydantic import ValidationError
 
@@ -8,7 +9,6 @@ from src.application.category.list_category import ListCategory, SortableFields
 from src.application.listing import ListOutput, SortDirection
 from src.domain.category.category import Category
 from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
-from src.infra.elasticsearch.client import get_elasticsearch
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ router = APIRouter()
 
 
 def get_repository() -> CategoryElasticRepository:
-    return CategoryElasticRepository(client=get_elasticsearch())
+    return CategoryElasticRepository()
 
 
 @router.get("/", response_model=ListOutput)

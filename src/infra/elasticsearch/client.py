@@ -1,5 +1,6 @@
 from elasticsearch import Elasticsearch
 
+from src.config import ELASTICSEARCH_HOST
 
 CATEGORY_INDEX = "categories"
 
@@ -11,11 +12,17 @@ INDEXES = [
 ]
 
 
-def get_elasticsearch(host: str = "elasticsearch", port: int = 9200):
-    es = Elasticsearch([f"http://{host}:{port}"])
+_es_instance = None
 
-    for index in INDEXES:
-        if not es.indices.exists(index=index):
-            es.indices.create(index=index)
 
-    return es
+def get_elasticsearch(host: str = ""):
+    global _es_instance
+
+    if _es_instance is None:
+        _es_instance = Elasticsearch([host or ELASTICSEARCH_HOST])
+
+        for index in INDEXES:
+            if not _es_instance.indices.exists(index=index):
+                _es_instance.indices.create(index=index)
+
+    return _es_instance

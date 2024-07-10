@@ -3,6 +3,7 @@ import os
 from confluent_kafka import KafkaException, Consumer as KafkaConsumer
 import logging
 
+from src.config import KAFKA_HOST
 from src.domain.category.category import Category
 from src.domain.entity import Entity
 from src.infra.kafka.abstract_event_handler import AbstractEventHandler
@@ -14,15 +15,18 @@ logger = logging.getLogger("consumer")
 
 # Configuration for the Kafka consumer
 config = {
-    "bootstrap.servers": os.getenv("BOOTSTRAP_SERVERS", "kafka:19092"),
+    "bootstrap.servers": KAFKA_HOST,
     "group.id": "consumer-cluster",
     "auto.offset.reset": "earliest",
 }
 topics = [
     "catalog-db.codeflix.categories",
+    # "catalog-db.codeflix.genres",
+    # "catalog-db.codeflix.cast_members",
+    # "catalog-db.codeflix.videos",
 ]
 
-# Similar to a "router" -> calls proper handler
+# Similar to a "router" -> calls proper handler, each handler will call its specific method according to operation
 entity_to_handler: dict[Type[Entity], Type[AbstractEventHandler]] = {
     Category: CategoryEventHandler,
     # CastMember: CastMemberEventHandler,

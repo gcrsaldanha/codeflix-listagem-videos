@@ -1,5 +1,7 @@
 from datetime import datetime
 from fastapi.testclient import TestClient
+
+from src.config import ELASTICSEARCH_TEST_HOST
 from src.infra.api.http.category_router import get_repository
 from src.infra.api.http.main import app
 from typing import Iterator
@@ -13,26 +15,18 @@ from src.application.listing import ListOutputMeta
 from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
 from src.infra.elasticsearch.client import INDEXES, get_elasticsearch
 
-ELASTICSEARCH_HOST = "elasticsearch-test"  # from docker-compose.yml
-
-
-def setup_elasticsearch():
-    es = get_elasticsearch(host=ELASTICSEARCH_HOST)
-    for index in INDEXES:
-        es.indices.create(index=index) if not es.indices.exists(index=index) else None
-
-
-def teardown_elasticsearch():
-    es = get_elasticsearch(host=ELASTICSEARCH_HOST)
-    for index in INDEXES:
-        es.indices.delete(index=index)
-
 
 @pytest.fixture
 def elasticsearch() -> Iterator[Elasticsearch]:
-    setup_elasticsearch()
-    yield get_elasticsearch(host=ELASTICSEARCH_HOST)
-    teardown_elasticsearch()
+    es = get_elasticsearch(host=ELASTICSEARCH_TEST_HOST)
+
+    for index in INDEXES:
+        es.indices.create(index=index) if not es.indices.exists(index=index) else None
+
+    yield es
+
+    for index in INDEXES:
+        es.indices.delete(index=index)
 
 
 @pytest.fixture
@@ -44,6 +38,7 @@ def test_repository(elasticsearch) -> Iterator[CategoryElasticRepository]:
 def test_client(test_repository) -> Iterator[TestClient]:
     app.dependency_overrides[get_repository] = lambda: test_repository
     yield TestClient(app)
+    app.dependency_overrides.clear()
 
 
 def test_list_categories_with_pagination(
