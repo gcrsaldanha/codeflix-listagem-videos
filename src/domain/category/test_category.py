@@ -1,11 +1,10 @@
 import uuid
 from datetime import datetime, timezone
-from uuid import UUID
 
 from pydantic import ValidationError
 import pytest
 
-from src.application.category.tests.factories import CategoryFactory
+from src.domain.factories import CategoryFactory
 from src.domain.category.category import Category
 
 
@@ -40,10 +39,9 @@ class TestCategory:
         assert exc_info.value.errors()[0]["loc"] == ("name",)
         assert exc_info.value.errors()[0]["msg"] == "String should have at least 1 character"
 
-    def test_cannot_create_cateogry_with_description_longer_than_1024(self):
+    def test_cannot_create_category_with_description_longer_than_1024(self):
         with pytest.raises(ValueError, match="String should have at most 1024 characters"):
             CategoryFactory(name="Filme", description="a" * 1025)
-
 
     def test_multiple_validation_errors(self):
         with pytest.raises(ValueError) as exc_info:
@@ -70,3 +68,46 @@ class TestEquality:
         dummy.id = common_id
 
         assert category != dummy
+
+
+class TestToDict:
+    def test_to_dict(self):
+        category = CategoryFactory(
+            name="Filme",
+            description="Filmes em geral",
+            is_active=True,
+        )
+        category_dict = category.to_dict()
+
+        assert category_dict["id"] == category.id
+        assert category_dict["name"] == "Filme"
+        assert category_dict["description"] == "Filmes em geral"
+        assert category_dict["is_active"] is True
+        assert category_dict["created_at"] == category.created_at
+        assert category_dict["updated_at"] == category.updated_at
+        assert isinstance(category_dict["created_at"], datetime)
+        assert isinstance(category_dict["updated_at"], datetime)
+
+
+class TestFromDict:
+    def test_from_dict(self):
+        id = uuid.uuid4()
+        category_dict = {
+            "id": id,
+            "name": "Filme",
+            "description": "Filmes em geral",
+            "is_active": True,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        }
+
+        category = Category.from_dict(category_dict)
+
+        assert category.id == id
+        assert category.name == "Filme"
+        assert category.description == "Filmes em geral"
+        assert category.is_active is True
+        assert category.created_at == category_dict["created_at"]
+        assert category.updated_at == category_dict["updated_at"]
+        assert isinstance(category.created_at, datetime)
+        assert isinstance(category.updated_at, datetime)

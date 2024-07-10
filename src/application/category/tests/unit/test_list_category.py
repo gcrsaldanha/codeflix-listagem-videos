@@ -3,7 +3,7 @@ from unittest.mock import create_autospec
 import pytest
 
 from src.application.category.list_category import ListCategory
-from src.application.category.tests.factories import CategoryFactory
+from src.domain.factories import CategoryFactory
 from src.application.listing import ListOutputMeta
 from src.domain.category.category import Category
 from src.domain.category.category_repository import CategoryRepository

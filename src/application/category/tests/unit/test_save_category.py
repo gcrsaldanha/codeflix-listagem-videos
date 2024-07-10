@@ -3,9 +3,6 @@ import uuid
 from unittest.mock import MagicMock
 from uuid import UUID
 
-import pytest
-
-from src.application.category.exceptions import InvalidCategory
 from src.application.category.save_category import SaveCategory
 from src.domain.category.category import Category
 from src.domain.category.category_repository import CategoryRepository

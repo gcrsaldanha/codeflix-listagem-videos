@@ -1,7 +1,8 @@
 from enum import StrEnum
+from typing import Type
 
-from src.application.category.exceptions import SearchError
-from src.application.listing import ListOutputMeta, ListOutput, ListInput
+from src.application.list_entity import ListEntity, T
+from src.application.listing import ListOutput, ListInput
 from src.domain.category.category import Category
 from src.domain.category.category_repository import CategoryRepository
 
@@ -11,31 +12,13 @@ class SortableFields(StrEnum):
     DESCRIPTION = "description"
 
 
-class ListCategory:
+class ListCategory(ListEntity[Category, CategoryRepository]):
     class Input(ListInput):
         sort: SortableFields = SortableFields.NAME
 
     class Output(ListOutput[Category]):
         pass
 
-    def __init__(self, repository: CategoryRepository) -> None:
-        self.repository = repository
-
-    def execute(self, input: Input) -> Output:
-        try:
-            categories, total_count = self.repository.search(
-                search=input.search,
-                page=input.page,
-                per_page=input.per_page,
-                sort=input.sort,
-                direction=input.direction,
-            )
-        except Exception as err:
-            raise SearchError(err)
-        else:
-            meta = ListOutputMeta(
-                page=input.page,
-                per_page=input.per_page,
-                total_count=total_count,
-            )
-            return ListCategory.Output(data=categories, meta=meta)
+    @property
+    def output(self) -> Type[ListOutput[Category]]:
+        return ListCategory.Output

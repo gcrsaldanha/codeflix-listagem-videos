@@ -1,4 +1,4 @@
-class InvalidCategory(Exception):
+class InvalidEntity(Exception):
     pass
 
 

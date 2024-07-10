@@ -1,10 +1,10 @@
 import pytest
 
 from src.application.category.list_category import ListCategory
-from src.application.category.tests.factories import CategoryFactory
+from src.domain.factories import CategoryFactory
 from src.application.listing import ListOutputMeta
 from src.domain.category.category import Category
-from src.infra.elasticsearch.in_memory_category_repository import InMemoryCategoryRepository
+from src.infra.elasticsearch.category_in_memory_repository import CategoryInMemoryRepository
 
 
 class TestListCategory:
@@ -30,7 +30,7 @@ class TestListCategory:
         )
 
     def test_when_no_categories_then_return_empty_list(self) -> None:
-        empty_repository = InMemoryCategoryRepository()
+        empty_repository = CategoryInMemoryRepository()
         use_case = ListCategory(repository=empty_repository)
         response = use_case.execute(input=ListCategory.Input())
 
@@ -45,10 +45,10 @@ class TestListCategory:
         category_series: Category,
         category_documentary: Category,
     ) -> None:
-        repository = InMemoryCategoryRepository()
-        repository.save(category=category_movie)
-        repository.save(category=category_series)
-        repository.save(category=category_documentary)
+        repository = CategoryInMemoryRepository()
+        repository.save(category_movie)
+        repository.save(category_series)
+        repository.save(category_documentary)
 
         use_case = ListCategory(repository=repository)
         response = use_case.execute(

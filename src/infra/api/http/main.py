@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from src.config import ENABLE_GRAPHQL
+from src.infra.api.http.genre_router import router as genre_router
 from src.infra.api.http.category_router import router as category_router
 
 logging.basicConfig(level=logging.INFO)
@@ -19,6 +20,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(category_router, prefix="/categories")
+app.include_router(genre_router, prefix="/genres")
 
 if ENABLE_GRAPHQL:
     from src.infra.api.graphql.main import graphql_app

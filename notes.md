@@ -1,3 +1,6 @@
+- [ ] Como lidar com `is_active`?
+- [ ] https://hub.docker.com/r/confluentinc/cp-enterprise-control-center
+
 - [x] O SaveCategory use case só vai ser chamado pelo nosso Kafka, correto?
 - [x] Gateway vs Repository -> gateway porque não é agregado
 - [x] Docker compose
@@ -10,4 +13,4 @@
 - [x] Exibir o id?
 - [x] Podemos assumir que o save vai ser sempre um **PUT**?
 - Fazer retry do kafka quando criar/deletar - derrubar o servidor do kafka / circuit breaker
-- [ ] Quando eu reinicio o docker, preciso registrar o connector novamente
+- [x] Quando eu reinicio o docker, preciso registrar o connector novamente

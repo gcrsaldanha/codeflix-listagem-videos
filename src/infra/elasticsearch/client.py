@@ -3,10 +3,11 @@ from elasticsearch import Elasticsearch
 from src.config import ELASTICSEARCH_HOST
 
 CATEGORY_INDEX = "categories"
+GENRE_INDEX = "genres"
 
 INDEXES = [
     CATEGORY_INDEX,
-    # "genres",
+    GENRE_INDEX,
     # "cast_members",
     # "videos",
 ]
