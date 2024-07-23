@@ -1,7 +1,7 @@
 #!/bin/sh
 echo "Kafka Connect started. Registering Debezium connector..."
 
-# Register the Debezium connector
+printf "Registering Debezium connector...\n"
 curl -i -X POST -H "Accept: application/json" -H "Content-Type: application/json" connect:8083/connectors/ -d '{
   "name": "catalog-connector",
   "config": {
@@ -18,3 +18,23 @@ curl -i -X POST -H "Accept: application/json" -H "Content-Type: application/json
     "schema.history.internal.kafka.topic": "schema-changes.catalog"
   }
 }'
+printf "Debezium connector registered.\n\n"
+
+
+printf "Registering Elasticsearch Sink connector...\n"
+curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" http://connect:8083/connectors/ -d '{
+  "name": "elasticsearch-sink-connector",
+  "config": {
+    "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "tasks.max": "1",
+    "topics.regex": "catalog-db\\.codeflix\\..*",
+    "connection.url": "http://elasticsearch:9200",
+    "transforms": "unwrap,key",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.key.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+    "transforms.key.field": "id",
+    "key.ignore": "false",
+    "behavior.on.null.values": "delete"
+  }
+}'
+printf "Elasticsearch Sink connector registered.\n\n"

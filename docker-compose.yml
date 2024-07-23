@@ -158,6 +158,11 @@ services:
       CONFIG_STORAGE_REPLICATION_FACTOR: 1
       OFFSET_STORAGE_REPLICATION_FACTOR: 1
       STATUS_STORAGE_REPLICATION_FACTOR: 1
+      # CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      # CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      # CONNECT_REST_ADVERTISED_HOST_NAME: connect
+      CONNECT_PLUGIN_PATH: /kafka/connect,/kafka/extra-plugins
+      # CONNECT_DEBEZIUM_MYSQL_PLUGIN_NAME: io.debezium.connector.mysql.MySqlConnector
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8083/connectors" ]
       interval: 30s
@@ -168,6 +173,8 @@ services:
         condition: service_healthy
       mysql:
         condition: service_healthy
+    volumes:
+      - ./connect-plugins:/kafka/extra-plugins
 
   connect-setup:
     container_name: connect-setup
@@ -217,3 +224,4 @@ volumes:
   mysql-data:
   elasticsearch-data:
   kui-data:
+  connect-plugins:

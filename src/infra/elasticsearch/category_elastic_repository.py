@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Tuple
 
 from elasticsearch import Elasticsearch
 
@@ -36,7 +36,7 @@ class CategoryElasticRepository(CategoryRepository):
         search: str | None = None,
         sort: str | None = None,
         direction: SortDirection = SortDirection.ASC,
-    ) -> Tuple[List[Category], int]:
+    ) -> Tuple[list[Category], int]:
         if (
             not self.client.indices.exists(index=self.index)
             or self.client.count(index=self.index, body={"query": {"match_all": {}}})["count"] == 0
@@ -59,6 +59,8 @@ class CategoryElasticRepository(CategoryRepository):
         }
 
         response = self.client.search(index=self.index, body=query)
+        print("elasticresponse")
+        print(response)
         total_count = response["hits"]["total"]["value"]
         categories = [Category.from_dict(hit["_source"]) for hit in response["hits"]["hits"]]
 
