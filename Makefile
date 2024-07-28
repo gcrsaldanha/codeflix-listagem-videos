@@ -24,6 +24,9 @@ run-consumer:
 list-connectors:
 	curl localhost:8083/connectors/
 
+delete-connector:
+	curl -X DELETE localhost:8083/connectors/$(connector)
+
 
 run-connect:
 	docker compose exec -it kafka \

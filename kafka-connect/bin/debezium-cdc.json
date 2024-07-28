@@ -1,5 +1,5 @@
 {
-    "name": "catalog-db-connector",
+    "name": "debezium-cdc",
     "config": {
         "connector.class": "io.debezium.connector.mysql.MySqlConnector",
         "tasks.max": "1",
