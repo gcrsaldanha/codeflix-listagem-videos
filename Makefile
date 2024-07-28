@@ -21,8 +21,8 @@ consume-events:
 run-consumer:
 	docker compose up -d consumer
 
-get-connector:
-	curl localhost:8083/connectors/catalog-connector
+list-connectors:
+	curl localhost:8083/connectors/
 
 
 run-connect:

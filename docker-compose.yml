@@ -140,8 +140,6 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
-    profiles:
-      - dev
 
   connect:
     container_name: connect
@@ -150,7 +148,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      BOOTSTRAP_SERVERS: kafka:19092  # If connecting from host: 9092
+      BOOTSTRAP_SERVERS: kafka:19092  # If connecting from host machine: 9092
       GROUP_ID: "connect-cluster"
       CONFIG_STORAGE_TOPIC: my_connect_configs
       OFFSET_STORAGE_TOPIC: my_connect_offsets
@@ -174,17 +172,17 @@ services:
       mysql:
         condition: service_healthy
     volumes:
-      - ./connect-plugins:/kafka/extra-plugins
+      - ./kafka-connect/connect-plugins:/kafka/extra-plugins
 
   connect-setup:
     container_name: connect-setup
     image: curlimages/curl
     volumes:
-      - ./bin/connect-setup.sh:/connect-setup.sh
+      - ./kafka-connect/bin:/kafka-connect/bin
     depends_on:
       connect:
         condition: service_healthy
-    command: ["sh", "-c", "/connect-setup.sh"]
+    command: ["sh", "-c", "/kafka-connect/bin/connect-setup.sh"]
     restart: "no"
 
   elasticsearch-test:
@@ -224,4 +222,3 @@ volumes:
   mysql-data:
   elasticsearch-data:
   kui-data:
-  connect-plugins:
