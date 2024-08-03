@@ -1,9 +1,11 @@
 ```sql
 DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS genres;
 
 
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    external_id VARCHAR(36) DEFAULT (UUID()) NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     is_active BOOLEAN DEFAULT TRUE,
@@ -13,6 +15,7 @@ CREATE TABLE categories (
 
 CREATE TABLE genres (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    external_id VARCHAR(36) DEFAULT (UUID()) NOT NULL,
     name VARCHAR(255) NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -39,6 +42,33 @@ UPDATE categories SET name = 'Serie 2' WHERE id = '3';
 ```
 
 
-```bash
 
+```bash
+# Create category
+curl -X POST "http://localhost:8000/categories" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "id": "124e4567-e89b-12d3-a456-426614174000",
+           "name": "Category Name",
+           "description": "Category Description",
+           "is_active": true,
+           "created_at": "2023-01-01T00:00:00",
+           "updated_at": "2023-01-01T00:00:00"
+         }'
+
+curl -X POST "http://localhost:8000/categories" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "id": "123e4567-e89b-12d3-a456-426614174000",
+           "name": "Category Name",
+           "description": "Category Description",
+           "is_active": true,
+           "created_at": "2023-01-01T00:00:00",
+           "updated_at": "2023-01-01T00:00:00"
+         }'
+
+
+
+# List Categories
+curl -X GET "http://localhost:8000/categories"
 ```

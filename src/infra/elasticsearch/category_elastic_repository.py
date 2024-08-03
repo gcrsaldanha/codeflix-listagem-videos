@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from elasticsearch import Elasticsearch
 
 from src.application.category.list_category import SortableFields
@@ -22,6 +20,7 @@ class CategoryElasticRepository(CategoryRepository):
         self.wait_for_refresh = wait_for_refresh
 
     def save(self, entity: Category) -> None:
+        # TODO: not used?
         self.client.index(
             index=self.index,
             id=str(entity.id),
@@ -36,13 +35,26 @@ class CategoryElasticRepository(CategoryRepository):
         search: str | None = None,
         sort: str | None = None,
         direction: SortDirection = SortDirection.ASC,
-    ) -> Tuple[list[Category], int]:
-        if (
-            not self.client.indices.exists(index=self.index)
-            or self.client.count(index=self.index, body={"query": {"match_all": {}}})["count"] == 0
-        ):
+    ) -> tuple[list[Category], int]:
+        if self.is_empty():
             return [], 0
 
+        query = self.build_query(direction, page, per_page, search, sort)
+        return self.build_response(query)
+
+    def build_response(self, query: dict) -> tuple[list[Category], int]:
+        response = self.client.search(index=self.index, body=query)
+        total_count = response["hits"]["total"]["value"]
+
+        categories = []
+        for hit in response["hits"]["hits"]:
+            category_dict = hit["_source"]
+            category_dict["id"] = category_dict.pop("external_id")
+            categories.append(Category.from_dict(category_dict))
+
+        return categories, total_count
+
+    def build_query(self, direction, page, per_page, search, sort):
         query = {
             "query": {
                 "bool": {
@@ -57,93 +69,10 @@ class CategoryElasticRepository(CategoryRepository):
             "size": per_page,
             "sort": [{f"{sort}.keyword": {"order": direction}}] if sort else [],  # Use .keyword for efficient sorting
         }
+        return query
 
-        response = self.client.search(index=self.index, body=query)
-        print("elasticresponse")
-        print(response)
-        total_count = response["hits"]["total"]["value"]
-        categories = [Category.from_dict(hit["_source"]) for hit in response["hits"]["hits"]]
-
-        return categories, total_count
-
-
-"""
-response = {
-    "took": 68,
-    "timed_out": False,
-    "_shards": {"total": 1, "successful": 1, "skipped": 0, "failed": 0},
-    "hits": {
-        "total": {"value": 5, "relation": "eq"},
-        "max_score": 1.0,
-        "hits": [
-            {
-                "_index": "categories",
-                "_id": "123e4567-e89b-12d3-a456-426614174000",
-                "_score": 1.0,
-                "_source": {
-                    "id": "123e4567-e89b-12d3-a456-426614174000",
-                    "name": "Category Name",
-                    "description": "Category Description",
-                    "is_active": True,
-                    "created_at": "2023-01-01T00:00:00",
-                    "updated_at": "2023-01-01T00:00:00",
-                },
-            },
-            {
-                "_index": "categories",
-                "_id": "124e4567-e89b-12d3-a456-426614174000",
-                "_score": 1.0,
-                "_source": {
-                    "id": "124e4567-e89b-12d3-a456-426614174000",
-                    "name": "Category Name",
-                    "description": "Category Description",
-                    "is_active": True,
-                    "created_at": "2023-01-01T00:00:00",
-                    "updated_at": "2023-01-01T00:00:00",
-                },
-            },
-            {
-                "_index": "categories",
-                "_id": "2057b909-b100-422d-9b8f-a1fc183a791b",
-                "_score": 1.0,
-                "_source": {
-                    "id": "2057b909-b100-422d-9b8f-a1fc183a791b",
-                    "created_at": "2024-05-23T11:56:11.111340",
-                    "updated_at": "2024-05-23T11:56:11.112528",
-                    "notification": {},
-                    "name": "Nova Category",
-                    "description": "",
-                    "is_active": True,
-                },
-            },
-            {
-                "_index": "categories",
-                "_id": "71f4bf9f-c6d0-4f47-bb48-c1e0f3c93c58",
-                "_score": 1.0,
-                "_source": {
-                    "id": "71f4bf9f-c6d0-4f47-bb48-c1e0f3c93c58",
-                    "created_at": "2024-05-23T13:34:55.686050",
-                    "updated_at": "2024-05-23T13:34:55.686232",
-                    "notification": {},
-                    "name": "Categoria X",
-                    "description": "",
-                    "is_active": True,
-                },
-            },
-            {
-                "_index": "categories",
-                "_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                "_score": 1.0,
-                "_source": {
-                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                    "name": "string",
-                    "description": "string",
-                    "is_active": True,
-                    "created_at": "2024-06-06T10:05:40.822000+00:00",
-                    "updated_at": "2024-06-06T10:05:40.822000+00:00",
-                },
-            },
-        ],
-    },
-}
-"""
+    def is_empty(self) -> bool:
+        return (
+            not self.client.indices.exists(index=self.index)
+            or self.client.count(index=self.index, body={"query": {"match_all": {}}})["count"] == 0
+        )

@@ -5,7 +5,6 @@ from elasticsearch import Elasticsearch
 from fastapi.testclient import TestClient
 
 from src.application.genre.list_genre import ListGenre
-from src.application.genre.save_genre import SaveGenre
 from src.application.listing import ListOutputMeta
 from src.config import ELASTICSEARCH_TEST_HOST
 from src.domain.factories import CategoryFactory, GenreFactory
@@ -43,6 +42,7 @@ def test_client(test_repository) -> Iterator[TestClient]:
 def test_list_genres_with_pagination(
     test_repository: GenreElasticRepository,
     test_client: TestClient,
+    elasticsearch: Elasticsearch,
 ):
     film = CategoryFactory(name="Film")
     short = CategoryFactory(name="Short")
@@ -51,9 +51,36 @@ def test_list_genres_with_pagination(
     romance = GenreFactory(name="Romance", categories={film.id, short.id})
     comedy = GenreFactory(name="Comedy", categories=set())
 
-    SaveGenre(repository=test_repository).execute(SaveGenre.Input(drama))
-    SaveGenre(repository=test_repository).execute(SaveGenre.Input(romance))
-    SaveGenre(repository=test_repository).execute(SaveGenre.Input(comedy))
+    elasticsearch.index(
+        index=test_repository.index,
+        id=str(1),
+        body={
+            **drama.to_dict(),
+            "external_id": drama.id,
+            "categories": list(drama.categories),
+        },
+        refresh="wait_for",
+    )
+    elasticsearch.index(
+        index=test_repository.index,
+        id=str(2),
+        body={
+            **romance.to_dict(),
+            "external_id": romance.id,
+            "categories": list(romance.categories),
+        },
+        refresh="wait_for",
+    )
+    elasticsearch.index(
+        index=test_repository.index,
+        id=str(3),
+        body={
+            **comedy.to_dict(),
+            "external_id": comedy.id,
+            "categories": list(comedy.categories),
+        },
+        refresh="wait_for",
+    )
 
     use_case = ListGenre(repository=test_repository)
     list_output = use_case.execute(ListGenre.Input(page=1, per_page=2))

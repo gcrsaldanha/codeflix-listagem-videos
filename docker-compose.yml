@@ -64,7 +64,8 @@ services:
       DYNAMIC_CONFIG_ENABLED: true
     volumes:
       - kui-data:/etc/kafkaui/
-
+    profiles:
+      - dev
 
   mysql:
     container_name: mysql
@@ -140,6 +141,8 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
+    profiles:
+      - dev
 
   connect:
     container_name: connect

@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 from elasticsearch import Elasticsearch
 
 from src.application.genre.list_genre import SortableFields
@@ -40,23 +38,25 @@ class GenreElasticRepository(GenreRepository):
         search: str | None = None,
         sort: str | None = None,
         direction: SortDirection = SortDirection.ASC,
-    ) -> Tuple[List[Genre], int]:
+    ) -> tuple[list[Genre], int]:
         if self.is_empty():
             return [], 0
 
         query = self.build_query(direction, page, per_page, search, sort)
         return self.build_response(query)
 
-    def build_response(self, query: dict) -> Tuple[list[Genre], int]:
+    def build_response(self, query: dict) -> tuple[list[Genre], int]:
         response = self.client.search(index=self.index, body=query)
         total_count = response["hits"]["total"]["value"]
 
-        # We saved categories as list, must convert to set again
+        # We saved categories as list in elasticsearch, must convert to set again
         genres = []
         for hit in response["hits"]["hits"]:
             genre_dict = hit["_source"]
-            genre_dict["categories"] = set(genre_dict["categories"])
+            genre_dict["categories"] = set(genre_dict.get("categories", []))
+            genre_dict["id"] = genre_dict.pop("external_id")
             genres.append(Genre.from_dict(genre_dict))
+
         return genres, total_count
 
     def build_query(self, direction, page, per_page, search, sort):

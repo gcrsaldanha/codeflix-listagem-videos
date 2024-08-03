@@ -2,8 +2,8 @@ from elasticsearch import Elasticsearch
 
 from src.config import ELASTICSEARCH_HOST
 
-CATEGORY_INDEX = "categories"
-GENRE_INDEX = "genres"
+CATEGORY_INDEX = "catalog-db.codeflix.categories"
+GENRE_INDEX = "catalog-db.codeflix.genres"
 
 INDEXES = [
     CATEGORY_INDEX,

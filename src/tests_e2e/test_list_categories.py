@@ -9,7 +9,6 @@ from elasticsearch import Elasticsearch
 import pytest
 
 from src.application.category.list_category import ListCategory
-from src.application.category.save_category import SaveCategory
 from src.domain.factories import CategoryFactory
 from src.application.listing import ListOutputMeta
 from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
@@ -44,15 +43,40 @@ def test_client(test_repository) -> Iterator[TestClient]:
 def test_list_categories_with_pagination(
     test_repository: CategoryElasticRepository,
     test_client: TestClient,
+    elasticsearch: Elasticsearch,
 ):
-    # TODO: Desafio: simular eventos Kafka
+    # TODO: factories for data coming from debezium: {"id": int, "external_id": uuid, ...}
     romance = CategoryFactory(name="Romance")
     drama = CategoryFactory(name="Drama")
     short = CategoryFactory(name="Short")
 
-    SaveCategory(repository=test_repository).execute(SaveCategory.Input(romance))
-    SaveCategory(repository=test_repository).execute(SaveCategory.Input(drama))
-    SaveCategory(repository=test_repository).execute(SaveCategory.Input(short))
+    elasticsearch.index(
+        index=test_repository.index,
+        id=str(1),
+        body={
+            **romance.to_dict(),
+            "external_id": romance.id,
+        },
+        refresh="wait_for",
+    )
+    elasticsearch.index(
+        index=test_repository.index,
+        id=str(2),
+        body={
+            **drama.to_dict(),
+            "external_id": drama.id,
+        },
+        refresh="wait_for",
+    )
+    elasticsearch.index(
+        index=test_repository.index,
+        id=str(3),
+        body={
+            **short.to_dict(),
+            "external_id": short.id,
+        },
+        refresh="wait_for",
+    )
 
     use_case = ListCategory(repository=test_repository)
     list_output = use_case.execute(ListCategory.Input(page=1, per_page=2))
