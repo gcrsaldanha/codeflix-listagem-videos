@@ -16,4 +16,7 @@ class Genre(Entity):
         return cls(**data)
 
     def to_dict(self) -> dict:
-        return self.model_dump()
+        return {
+            **self.model_dump(),
+            "categories": [str(category) for category in self.categories],
+        }

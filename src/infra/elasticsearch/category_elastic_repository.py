@@ -20,7 +20,7 @@ class CategoryElasticRepository(CategoryRepository):
         self.wait_for_refresh = wait_for_refresh
 
     def save(self, entity: Category) -> None:
-        # TODO: not used?
+        # TODO: not used yet
         self.client.index(
             index=self.index,
             id=str(entity.id),
@@ -45,12 +45,7 @@ class CategoryElasticRepository(CategoryRepository):
     def build_response(self, query: dict) -> tuple[list[Category], int]:
         response = self.client.search(index=self.index, body=query)
         total_count = response["hits"]["total"]["value"]
-
-        categories = []
-        for hit in response["hits"]["hits"]:
-            category_dict = hit["_source"]
-            category_dict["id"] = category_dict.pop("external_id")
-            categories.append(Category.from_dict(category_dict))
+        categories = [Category.from_dict(hit["_source"]) for hit in response["hits"]["hits"]]
 
         return categories, total_count
 

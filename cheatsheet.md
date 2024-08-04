@@ -4,8 +4,7 @@ DROP TABLE IF EXISTS genres;
 
 
 CREATE TABLE categories (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    external_id VARCHAR(36) DEFAULT (UUID()) NOT NULL,
+    id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
     name VARCHAR(255) NOT NULL,
     description TEXT,
     is_active BOOLEAN DEFAULT TRUE,
@@ -14,8 +13,7 @@ CREATE TABLE categories (
 );
 
 CREATE TABLE genres (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    external_id VARCHAR(36) DEFAULT (UUID()) NOT NULL,
+    id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
     name VARCHAR(255) NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -35,10 +33,10 @@ VALUES
 ;
 
 
-DELETE FROM categories WHERE id = '3';
+DELETE FROM categories WHERE id = 'uuid';
 
 
-UPDATE categories SET name = 'Serie 2' WHERE id = '3';
+UPDATE categories SET name = 'Serie 2' WHERE id = 'uuid';
 ```
 
 

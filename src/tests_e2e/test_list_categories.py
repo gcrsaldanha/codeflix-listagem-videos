@@ -45,38 +45,13 @@ def test_list_categories_with_pagination(
     test_client: TestClient,
     elasticsearch: Elasticsearch,
 ):
-    # TODO: factories for data coming from debezium: {"id": int, "external_id": uuid, ...}
     romance = CategoryFactory(name="Romance")
     drama = CategoryFactory(name="Drama")
     short = CategoryFactory(name="Short")
 
-    elasticsearch.index(
-        index=test_repository.index,
-        id=str(1),
-        body={
-            **romance.to_dict(),
-            "external_id": romance.id,
-        },
-        refresh="wait_for",
-    )
-    elasticsearch.index(
-        index=test_repository.index,
-        id=str(2),
-        body={
-            **drama.to_dict(),
-            "external_id": drama.id,
-        },
-        refresh="wait_for",
-    )
-    elasticsearch.index(
-        index=test_repository.index,
-        id=str(3),
-        body={
-            **short.to_dict(),
-            "external_id": short.id,
-        },
-        refresh="wait_for",
-    )
+    test_repository.save(romance)
+    test_repository.save(drama)
+    test_repository.save(short)
 
     use_case = ListCategory(repository=test_repository)
     list_output = use_case.execute(ListCategory.Input(page=1, per_page=2))

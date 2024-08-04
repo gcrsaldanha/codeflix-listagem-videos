@@ -9,6 +9,7 @@ from src.infra.elasticsearch.client import get_elasticsearch, GENRE_INDEX
 
 
 class GenreElasticRepository(GenreRepository):
+    # TODO: abstract this repository to a base class
     def __init__(self, client: Elasticsearch | None = None, wait_for_refresh: bool = False):
         """
         :param client: Elasticsearch client
@@ -21,13 +22,10 @@ class GenreElasticRepository(GenreRepository):
 
     def save(self, entity: Genre) -> None:
         # Elasticsearch cannot serialize set objects, so we need to convert it to a list
-        genre_dict = entity.to_dict()
-        genre_dict["categories"] = list(entity.categories)
-
         self.client.index(
             index=self.index,
             id=str(entity.id),
-            body=genre_dict,
+            body=entity.to_dict(),
             refresh="wait_for" if self.wait_for_refresh else False,
         )
 
@@ -49,13 +47,8 @@ class GenreElasticRepository(GenreRepository):
         response = self.client.search(index=self.index, body=query)
         total_count = response["hits"]["total"]["value"]
 
-        # We saved categories as list in elasticsearch, must convert to set again
-        genres = []
-        for hit in response["hits"]["hits"]:
-            genre_dict = hit["_source"]
-            genre_dict["categories"] = set(genre_dict.get("categories", []))
-            genre_dict["id"] = genre_dict.pop("external_id")
-            genres.append(Genre.from_dict(genre_dict))
+        # TODO: get genre categories
+        genres = [Genre.from_dict(hit["_source"]) for hit in response["hits"]["hits"]]
 
         return genres, total_count
 
