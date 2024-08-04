@@ -21,6 +21,15 @@ CREATE TABLE genres (
 );
 
 
+CREATE TABLE genre_categories (
+    id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()), -- Simple primary key to ease integration
+    genre_id VARCHAR(36),
+    category_id VARCHAR(36),
+    FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 INSERT INTO categories (name, description)
 VALUES
     ('Filme', 'Categoria para longa-metragem'),
