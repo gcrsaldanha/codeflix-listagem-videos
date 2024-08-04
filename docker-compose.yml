@@ -64,7 +64,8 @@ services:
       DYNAMIC_CONFIG_ENABLED: true
     volumes:
       - kui-data:/etc/kafkaui/
-
+    profiles:
+      - dev
 
   mysql:
     container_name: mysql
@@ -150,7 +151,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      BOOTSTRAP_SERVERS: kafka:19092  # If connecting from host: 9092
+      BOOTSTRAP_SERVERS: kafka:19092  # If connecting from host machine: 9092
       GROUP_ID: "connect-cluster"
       CONFIG_STORAGE_TOPIC: my_connect_configs
       OFFSET_STORAGE_TOPIC: my_connect_offsets
@@ -158,6 +159,11 @@ services:
       CONFIG_STORAGE_REPLICATION_FACTOR: 1
       OFFSET_STORAGE_REPLICATION_FACTOR: 1
       STATUS_STORAGE_REPLICATION_FACTOR: 1
+      # CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      # CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      # CONNECT_REST_ADVERTISED_HOST_NAME: connect
+      CONNECT_PLUGIN_PATH: /kafka/connect,/kafka/extra-plugins
+      # CONNECT_DEBEZIUM_MYSQL_PLUGIN_NAME: io.debezium.connector.mysql.MySqlConnector
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8083/connectors" ]
       interval: 30s
@@ -168,16 +174,18 @@ services:
         condition: service_healthy
       mysql:
         condition: service_healthy
+    volumes:
+      - ./kafka-connect/connect-plugins:/kafka/extra-plugins
 
   connect-setup:
     container_name: connect-setup
     image: curlimages/curl
     volumes:
-      - ./bin/connect-setup.sh:/connect-setup.sh
+      - ./kafka-connect/bin:/kafka-connect/bin
     depends_on:
       connect:
         condition: service_healthy
-    command: ["sh", "-c", "/connect-setup.sh"]
+    command: ["sh", "-c", "/kafka-connect/bin/connect-setup.sh"]
     restart: "no"
 
   elasticsearch-test:

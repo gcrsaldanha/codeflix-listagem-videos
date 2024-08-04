@@ -21,8 +21,11 @@ consume-events:
 run-consumer:
 	docker compose up -d consumer
 
-get-connector:
-	curl localhost:8083/connectors/catalog-connector
+list-connectors:
+	curl localhost:8083/connectors/
+
+delete-connector:
+	curl -X DELETE localhost:8083/connectors/$(connector)
 
 
 run-connect:

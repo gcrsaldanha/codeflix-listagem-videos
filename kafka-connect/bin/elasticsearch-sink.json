@@ -1,0 +1,17 @@
+{
+    "name": "elastic-sink",
+    "config": {
+        "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+        "tasks.max": "1",
+        "topics": "catalog-db.codeflix.categories,catalog-db.codeflix.genres,catalog-db.codeflix.genre_categories",
+        "connection.url": "http://elasticsearch:9200",
+        "transforms": "unwrap,key",
+        "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+        "transforms.unwrap.drop.tombstones": "false",
+        "transforms.unwrap.drop.deletes": "false",
+        "behavior.on.null.values": "delete",
+        "transforms.key.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+        "transforms.key.field": "id",
+        "key.ignore": "false"
+    }
+}

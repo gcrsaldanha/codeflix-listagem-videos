@@ -1,15 +1,15 @@
-import logging
-
 from elasticsearch import Elasticsearch
 
 from src.config import ELASTICSEARCH_HOST
 
-CATEGORY_INDEX = "categories"
-GENRE_INDEX = "genres"
+CATEGORY_INDEX = "catalog-db.codeflix.categories"
+GENRE_INDEX = "catalog-db.codeflix.genres"
+GENRE_CATEGORY_INDEX = "catalog-db.codeflix.genre_categories"
 
 INDEXES = [
     CATEGORY_INDEX,
     GENRE_INDEX,
+    GENRE_CATEGORY_INDEX,
     # "cast_members",
     # "videos",
 ]

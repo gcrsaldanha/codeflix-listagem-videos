@@ -85,7 +85,8 @@ class TestToDict:
 
         assert genre_dict["id"] == genre.id
         assert genre_dict["name"] == "Drama"
-        assert genre_dict["categories"] == {category_film.id, category_documentary.id}
+        assert str(category_film.id) in genre_dict["categories"]
+        assert str(category_documentary.id) in genre_dict["categories"]
         assert genre_dict["is_active"] is True
         assert genre_dict["created_at"] == genre.created_at
         assert genre_dict["updated_at"] == genre.updated_at
