@@ -27,7 +27,6 @@ CREATE TABLE genre_categories (
     category_id VARCHAR(36),
     FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 INSERT INTO categories (name, description)

@@ -4,10 +4,12 @@ from src.config import ELASTICSEARCH_HOST
 
 CATEGORY_INDEX = "catalog-db.codeflix.categories"
 GENRE_INDEX = "catalog-db.codeflix.genres"
+GENRE_CATEGORY_INDEX = "catalog-db.codeflix.genre_categories"
 
 INDEXES = [
     CATEGORY_INDEX,
     GENRE_INDEX,
+    GENRE_CATEGORY_INDEX,
     # "cast_members",
     # "videos",
 ]
