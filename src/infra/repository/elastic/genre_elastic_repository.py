@@ -1,5 +1,5 @@
 from collections import defaultdict
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from elasticsearch import Elasticsearch
 
@@ -27,6 +27,30 @@ class GenreElasticRepository(AbstractElasticRepository, GenreRepository):
             wait_for_refresh=wait_for_refresh,
         )
 
+    def save(self, entity: Entity) -> None:
+        # Save related Categories
+        for category_id in entity.categories:
+            new_id = str(uuid4())
+            self.client.index(
+                index=GENRE_CATEGORY_INDEX,
+                id=new_id,
+                body={
+                    "id": new_id,
+                    "genre_id": str(entity.id),
+                    "category_id": str(category_id)
+                },
+                refresh="wait_for" if self.wait_for_refresh else False,
+            )
+
+        # Save Genre
+        entity.categories = set()
+        self.client.index(
+            index=self.index,
+            id=str(entity.id),
+            body=entity.to_dict(),
+            refresh="wait_for" if self.wait_for_refresh else False,
+        )
+
     def build_response(self, query: dict) -> tuple[list[Genre], int]:
         response = self.client.search(index=self.index, body=query)
         total_count = response["hits"]["total"]["value"]
@@ -39,7 +63,7 @@ class GenreElasticRepository(AbstractElasticRepository, GenreRepository):
     def enrich_with_categories(self, genres: list[Genre]) -> None:
         genre_category_map = self.fetch_genre_categories(genres)
         for genre in genres:
-            genre.set_categories(genre_category_map.get(genre.id, set()))
+            genre.categories = genre_category_map.get(genre.id, set())
 
     def fetch_genre_categories(self, genres: list[Genre]) -> dict[GenreID, set[CategoryID]]:
         genre_ids_str = [str(genre.id) for genre in genres]
@@ -61,62 +85,3 @@ class GenreElasticRepository(AbstractElasticRepository, GenreRepository):
             genre_category_map[genre_id].add(category_id)
 
         return genre_category_map
-
-
-# client = get_elasticsearch()
-# query = {
-#     "query": {
-#         "terms": {
-#             "genre_id": ["51cae8cd-5208-11ef-a09a-0242ac120003"]
-#         }
-#     },
-#     "_source": ["genre_id", "category_id"]
-# }
-#
-# response = client.search(index=GENRE_CATEGORY_INDEX, body=query)
-
-
-# query_exact = {
-#     "query": {
-#         "term": {
-#             "id": "51cae8cd-5208-11ef-a09a-0242ac120003"
-#         }
-#     },
-# }
-#
-#
-# curl -X GET "localhost:9200/catalog-db.codeflix.categories/_search?pretty&pretty" -H 'Content-Type: application/json' -d'
-# {
-#   "query": {
-#     "terms": {
-#         "color" : {
-#             "index" : "my-index-000001",
-#             "id" : "2",
-#             "path" : "color"
-#         }
-#     }
-#   }
-# }
-# '
-#
-#
-# curl -X GET "localhost:9200/_search?pretty" -H 'Content-Type: application/json' -d'
-# {
-#   "query": {
-#     "terms": {
-#       "name": ["Romance", "Drama"],
-#     }
-#   }
-# }
-# '
-#
-#
-# curl -X GET "localhost:9200/_search?pretty" -H 'Content-Type: application/json' -d'
-# {
-#   "query": {
-#     "terms": {
-#       "name": ["Filme"]
-#     }
-#   }
-# }
-# '

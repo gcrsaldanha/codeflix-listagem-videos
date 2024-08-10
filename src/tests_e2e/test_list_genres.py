@@ -47,8 +47,8 @@ def test_list_genres_with_pagination(
     film = CategoryFactory(name="Film")
     short = CategoryFactory(name="Short")
 
-    drama = GenreFactory(name="Drama", categories=set())
-    romance = GenreFactory(name="Romance", categories=set())
+    drama = GenreFactory(name="Drama", categories={film.id})
+    romance = GenreFactory(name="Romance", categories={film.id, short.id})
     comedy = GenreFactory(name="Comedy", categories=set())
 
     test_repository.save(drama)

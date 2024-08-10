@@ -83,15 +83,13 @@ class TestToDict:
         genre = GenreFactory(name="Drama", categories={category_film.id, category_documentary.id})
         genre_dict = genre.to_dict()
 
-        assert genre_dict["id"] == genre.id
+        assert genre_dict["id"] == str(genre.id)
         assert genre_dict["name"] == "Drama"
         assert str(category_film.id) in genre_dict["categories"]
         assert str(category_documentary.id) in genre_dict["categories"]
         assert genre_dict["is_active"] is True
-        assert genre_dict["created_at"] == genre.created_at
-        assert genre_dict["updated_at"] == genre.updated_at
-        assert isinstance(genre_dict["created_at"], datetime)
-        assert isinstance(genre_dict["updated_at"], datetime)
+        assert genre_dict["created_at"] == genre.created_at.isoformat().replace("+00:00", "Z")
+        assert genre_dict["updated_at"] == genre.updated_at.isoformat().replace("+00:00", "Z")
 
 
 class TestFromDict:

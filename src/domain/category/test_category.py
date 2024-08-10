@@ -79,14 +79,12 @@ class TestToDict:
         )
         category_dict = category.to_dict()
 
-        assert category_dict["id"] == category.id
+        assert category_dict["id"] == str(category.id)
         assert category_dict["name"] == "Filme"
         assert category_dict["description"] == "Filmes em geral"
         assert category_dict["is_active"] is True
-        assert category_dict["created_at"] == category.created_at
-        assert category_dict["updated_at"] == category.updated_at
-        assert isinstance(category_dict["created_at"], datetime)
-        assert isinstance(category_dict["updated_at"], datetime)
+        assert category_dict["created_at"] == category.created_at.isoformat().replace("+00:00", "Z")
+        assert category_dict["updated_at"] == category.updated_at.isoformat().replace("+00:00", "Z")
 
 
 class TestFromDict:

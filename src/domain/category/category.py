@@ -12,6 +12,3 @@ class Category(Entity):
     @classmethod
     def from_dict(cls, data: dict) -> "Category":
         return cls(**data)
-
-    def to_dict(self) -> dict:
-        return self.model_dump()

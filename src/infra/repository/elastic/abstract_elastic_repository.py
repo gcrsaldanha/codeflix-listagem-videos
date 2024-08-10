@@ -47,7 +47,14 @@ class AbstractElasticRepository(Repository, ABC):
     def build_response(self, query: dict) -> tuple[list[Entity], int]:
         raise NotImplementedError
 
-    def build_query(self, direction, page, per_page, search, sort):
+    def build_query(
+        self,
+        direction: SortDirection,
+        page: int,
+        per_page: int,
+        search: str | None,
+        sort: str | None,
+    ) -> dict:
         query = {
             "query": {
                 "bool": {
@@ -60,7 +67,7 @@ class AbstractElasticRepository(Repository, ABC):
             },
             "from": (page - 1) * per_page,
             "size": per_page,
-            "sort": [{f"{sort}.keyword": {"order": direction}}] if sort else [],  # Use .keyword for efficient sorting
+            "sort": [{f"{sort}.keyword": {"order": direction}}] if sort else [],  # Use .keyword for exact match
         }
         return query
 
