@@ -1,7 +1,7 @@
 from src.application.genre.list_genre import ListGenre
 from src.application.listing import ListOutputMeta
 from src.domain.factories import CategoryFactory, GenreFactory
-from src.infra.elasticsearch.genre_in_memory_repository import GenreInMemoryRepository
+from src.infra.repository.in_memory.genre_in_memory_repository import GenreInMemoryRepository
 
 
 class TestListGenre:

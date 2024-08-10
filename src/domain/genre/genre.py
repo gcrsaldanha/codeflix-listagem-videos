@@ -14,9 +14,3 @@ class Genre(Entity):
     @classmethod
     def from_dict(cls, data: dict) -> "Genre":
         return cls(**data)
-
-    def to_dict(self) -> dict:
-        return {
-            **self.model_dump(),
-            "categories": [str(category) for category in self.categories],
-        }

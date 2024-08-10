@@ -1,10 +1,10 @@
 import pytest
 
 from src.application.category.list_category import ListCategory
-from src.domain.factories import CategoryFactory
 from src.application.listing import ListOutputMeta
 from src.domain.category.category import Category
-from src.infra.elasticsearch.category_in_memory_repository import CategoryInMemoryRepository
+from src.domain.factories import CategoryFactory
+from src.infra.repository.in_memory.category_in_memory_repository import CategoryInMemoryRepository
 
 
 class TestListCategory:

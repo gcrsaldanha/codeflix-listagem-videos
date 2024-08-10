@@ -11,8 +11,8 @@ import pytest
 from src.application.category.list_category import ListCategory
 from src.domain.factories import CategoryFactory
 from src.application.listing import ListOutputMeta
-from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
-from src.infra.elasticsearch.client import INDEXES, get_elasticsearch
+from src.infra.repository.elastic.category_elastic_repository import CategoryElasticRepository
+from src.infra.repository.elastic.client import get_elasticsearch, INDEXES
 
 
 @pytest.fixture
