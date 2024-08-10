@@ -1,0 +1,17 @@
+- [ ] Como lidar com `is_active`?
+- [ ] ElasticSearch Sink? Na verdade estou fazendo manualmente a inserção através de um listener.
+  - Diferente: https://www.youtube.com/watch?v=qO4JL38_F1s&list=PL5aY_NrL1rjt_AZxj11kQjiTNLGg4ZaZA&index=6&t=1460s
+
+- [x] O SaveCategory use case só vai ser chamado pelo nosso Kafka, correto?
+- [x] Gateway vs Repository -> gateway porque não é agregado
+- [x] Docker compose
+- [x] Grande parte do projeto vai ser muito parecida com os outros - seguir o mesmo padrão!
+- [x] Organização de pastas: fastapi -> http, mover api pra infra
+- [x] `Category` deve possuir todos os campos?
+  - https://github.com/devfullcycle/FC3-catalogo-de-videos-api-java/blob/main/domain/src/main/java/com/fullcycle/catalogo/domain/category/Category.java#L8
+  - Parece que não tem mais o conceito de "entity"/"aggregate".
+- [x] UseCase input/output com o Domain direto
+- [x] Exibir o id?
+- [x] Podemos assumir que o save vai ser sempre um **PUT**?
+- Fazer retry do kafka quando criar/deletar - derrubar o servidor do kafka / circuit breaker
+- [x] Quando eu reinicio o docker, preciso registrar o connector novamente
