@@ -28,4 +28,17 @@ def get_elasticsearch(host: str = ""):
             if not _es_instance.indices.exists(index=index):
                 _es_instance.indices.create(index=index)
 
+        # Create a template for UUID fields (keyword)
+        template_body = {
+            "index_patterns": ["*"],
+            "mappings": {
+                "properties": {
+                    "id": {
+                        "type": "keyword"
+                    }
+                }
+            }
+        }
+        response = _es_instance.indices.put_template(name="uuid_template", body=template_body)
+
     return _es_instance

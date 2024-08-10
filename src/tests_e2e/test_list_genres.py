@@ -10,8 +10,8 @@ from src.config import ELASTICSEARCH_TEST_HOST
 from src.domain.factories import CategoryFactory, GenreFactory
 from src.infra.api.http.genre_router import get_repository
 from src.infra.api.http.main import app
-from src.infra.elasticsearch.client import INDEXES, get_elasticsearch
-from src.infra.elasticsearch.genre_elastic_repository import GenreElasticRepository
+from src.infra.repository.elastic.client import get_elasticsearch, INDEXES
+from src.infra.repository.elastic.genre_elastic_repository import GenreElasticRepository
 
 
 @pytest.fixture
@@ -47,8 +47,8 @@ def test_list_genres_with_pagination(
     film = CategoryFactory(name="Film")
     short = CategoryFactory(name="Short")
 
-    drama = GenreFactory(name="Drama", categories={film.id})
-    romance = GenreFactory(name="Romance", categories={film.id, short.id})
+    drama = GenreFactory(name="Drama", categories=set())
+    romance = GenreFactory(name="Romance", categories=set())
     comedy = GenreFactory(name="Comedy", categories=set())
 
     test_repository.save(drama)

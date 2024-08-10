@@ -1,26 +1,27 @@
+from abc import ABC, abstractmethod
+
 from elasticsearch import Elasticsearch
 
-from src.application.category.list_category import SortableFields
 from src.application.listing import SortDirection
 from src.config import DEFAULT_PAGINATION_SIZE
-from src.domain.category.category import Category
-from src.domain.category.category_repository import CategoryRepository
-from src.infra.elasticsearch.client import CATEGORY_INDEX, get_elasticsearch
+from src.domain.entity import Entity
+from src.domain.repository import Repository
 
 
-class CategoryElasticRepository(CategoryRepository):
-    def __init__(self, client: Elasticsearch | None = None, wait_for_refresh: bool = False):
-        """
-        :param client: Elasticsearch client
-        :param wait_for_refresh: Wait for indexing to ensure data is available for search. Slower but consistent.
-        """
-        self.index = CATEGORY_INDEX
-        self.searchable_fields = list(SortableFields)
-        self.client = client or get_elasticsearch()
+class AbstractElasticRepository(Repository, ABC):
+    def __init__(
+        self,
+        index: str,
+        client: Elasticsearch,
+        searchable_fields: list[str],
+        wait_for_refresh: bool,
+    ):
+        self.index = index
+        self.client = client
         self.wait_for_refresh = wait_for_refresh
+        self.searchable_fields = searchable_fields
 
-    def save(self, entity: Category) -> None:
-        # TODO: not used yet
+    def save(self, entity: Entity) -> None:
         self.client.index(
             index=self.index,
             id=str(entity.id),
@@ -35,19 +36,16 @@ class CategoryElasticRepository(CategoryRepository):
         search: str | None = None,
         sort: str | None = None,
         direction: SortDirection = SortDirection.ASC,
-    ) -> tuple[list[Category], int]:
+    ) -> tuple[list[Entity], int]:
         if self.is_empty():
             return [], 0
 
         query = self.build_query(direction, page, per_page, search, sort)
         return self.build_response(query)
 
-    def build_response(self, query: dict) -> tuple[list[Category], int]:
-        response = self.client.search(index=self.index, body=query)
-        total_count = response["hits"]["total"]["value"]
-        categories = [Category.from_dict(hit["_source"]) for hit in response["hits"]["hits"]]
-
-        return categories, total_count
+    @abstractmethod
+    def build_response(self, query: dict) -> tuple[list[Entity], int]:
+        raise NotImplementedError
 
     def build_query(self, direction, page, per_page, search, sort):
         query = {

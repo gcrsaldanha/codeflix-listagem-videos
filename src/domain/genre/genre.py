@@ -20,3 +20,6 @@ class Genre(Entity):
             **self.model_dump(),
             "categories": [str(category) for category in self.categories],
         }
+
+    def set_categories(self, categories: set[UUID]) -> None:
+        self.categories = categories

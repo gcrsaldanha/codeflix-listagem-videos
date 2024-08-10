@@ -26,18 +26,20 @@ CREATE TABLE genre_categories (
     genre_id VARCHAR(36),
     category_id VARCHAR(36),
     FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 );
 
 INSERT INTO categories (name, description)
 VALUES
     ('Filme', 'Categoria para longa-metragem'),
-    ('Documentary', 'Categoria para documentarios')
+    ('Documentary', 'Categoria para documentarios'),
+    ('Curta metragem', '')
 ;
 
 INSERT INTO genres (name)
 VALUES
-    ('Drama')
+    ('Drama'),
+    ('Romance')
 ;
 
 
@@ -77,4 +79,11 @@ curl -X POST "http://localhost:8000/categories" \
 
 # List Categories
 curl -X GET "http://localhost:8000/categories"
+```
+
+
+!!! Para saber que o evento foi syncado!
+
+```
+connect  | 2024-08-10 21:35:28,827 INFO   ||  4 records sent during previous 00:01:16.193, last recorded offset of {server=catalog-db} partition is {transaction_id=null, ts_sec=1723325728, file=binlog.000009, pos=6553, row=2, server_id=1, event=2}   [io.debezium.connector.common.BaseSourceTask]
 ```
