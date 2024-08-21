@@ -1,9 +1,7 @@
 from unittest.mock import create_autospec
 
-import pytest
-
-from src.application.genre.list_genre import ListGenre
-from src.application.listing import ListOutputMeta
+from src.application.genre.list_genre import ListGenre, SortableFields
+from src.application.listing import ListOutputMeta, SortDirection
 from src.domain.factories import CategoryFactory, GenreFactory
 from src.domain.genre.genre_repository import GenreRepository
 
@@ -56,3 +54,11 @@ class TestListGenre:
         )
         assert response.data[0].categories == {category_film.id, category_series.id}
         assert response.meta.next_page is None
+
+        repository.search.assert_called_once_with(
+            page=1,
+            per_page=2,
+            sort=SortableFields.NAME,
+            direction=SortDirection.ASC,
+            search=None,
+        )
