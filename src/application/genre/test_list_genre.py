@@ -1,13 +1,21 @@
+from unittest.mock import create_autospec
+
+import pytest
+
 from src.application.genre.list_genre import ListGenre
 from src.application.listing import ListOutputMeta
 from src.domain.factories import CategoryFactory, GenreFactory
-from src.infra.repository.in_memory.genre_in_memory_repository import GenreInMemoryRepository
+from src.domain.genre.genre_repository import GenreRepository
 
 
 class TestListGenre:
-    def test_when_no_genres_then_return_empty_list(self) -> None:
-        empty_repository = GenreInMemoryRepository()
-        use_case = ListGenre(repository=empty_repository)
+    def test_when_no_genres_then_return_empty_list(
+        self,
+    ) -> None:
+        repository = create_autospec(GenreRepository)
+        repository.search.return_value = ([], 0)
+
+        use_case = ListGenre(repository=repository)
         response = use_case.execute(input=ListGenre.Input())
 
         assert response == ListGenre.Output(
@@ -28,24 +36,23 @@ class TestListGenre:
             categories={category_film.id},
         )
 
-        repository = GenreInMemoryRepository()
-        repository.save(genre_drama)
-        repository.save(genre_comedy)
+        repository = create_autospec(GenreRepository)
+        repository.search.return_value = ([genre_drama, genre_comedy], 2)
 
         use_case = ListGenre(repository=repository)
         response = use_case.execute(
             input=ListGenre.Input(
-                per_page=1,
+                per_page=2,
             )
         )
 
         assert response == ListGenre.Output(
-            data=[genre_comedy],
+            data=[genre_drama, genre_comedy],
             meta=ListOutputMeta(
                 total_count=2,
                 page=1,
-                per_page=1,
+                per_page=2,
             ),
         )
-        assert response.data[0].categories == {category_film.id}
-        assert response.meta.next_page == 2
+        assert response.data[0].categories == {category_film.id, category_series.id}
+        assert response.meta.next_page is None

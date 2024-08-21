@@ -10,10 +10,6 @@ T = TypeVar("T", bound=Entity)
 
 class Repository(ABC, Generic[T]):
     @abstractmethod
-    def save(self, entity: T) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
     def search(
         self,
         page: int = 1,
