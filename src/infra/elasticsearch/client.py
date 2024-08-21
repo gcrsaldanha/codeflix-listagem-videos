@@ -39,6 +39,6 @@ def get_elasticsearch(host: str = ""):
                 }
             }
         }
-        response = _es_instance.indices.put_template(name="uuid_template", body=template_body)
+        _es_instance.indices.put_template(name="uuid_template", body=template_body)
 
     return _es_instance
