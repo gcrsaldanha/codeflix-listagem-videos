@@ -8,7 +8,7 @@ from src.application.exceptions import SearchError
 from src.application.genre.list_genre import ListGenre, SortableFields
 from src.application.listing import ListOutput, SortDirection
 from src.domain.genre.genre_repository import GenreRepository
-from src.infra.repository.elastic.genre_elastic_repository import GenreElasticRepository
+from src.infra.elasticsearch.genre_elastic_repository import GenreElasticRepository
 
 logger = logging.getLogger(__name__)
 

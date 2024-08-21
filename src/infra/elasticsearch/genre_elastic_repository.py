@@ -7,8 +7,8 @@ from src.application.genre.list_genre import SortableFields
 from src.domain.entity import Entity
 from src.domain.genre.genre import Genre
 from src.domain.genre.genre_repository import GenreRepository
-from src.infra.repository.elastic.abstract_elastic_repository import AbstractElasticRepository
-from src.infra.repository.elastic.client import GENRE_INDEX, get_elasticsearch, GENRE_CATEGORY_INDEX
+from src.infra.elasticsearch.abstract_elastic_repository import AbstractElasticRepository
+from src.infra.elasticsearch.client import GENRE_INDEX, get_elasticsearch, GENRE_CATEGORY_INDEX
 
 GenreID = UUID
 CategoryID = UUID

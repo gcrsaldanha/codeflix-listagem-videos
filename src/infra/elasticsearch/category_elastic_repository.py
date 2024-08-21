@@ -3,8 +3,8 @@ from elasticsearch import Elasticsearch
 from src.application.category.list_category import SortableFields
 from src.domain.category.category import Category
 from src.domain.category.category_repository import CategoryRepository
-from src.infra.repository.elastic.abstract_elastic_repository import AbstractElasticRepository
-from src.infra.repository.elastic.client import CATEGORY_INDEX, get_elasticsearch
+from src.infra.elasticsearch.abstract_elastic_repository import AbstractElasticRepository
+from src.infra.elasticsearch.client import CATEGORY_INDEX, get_elasticsearch
 
 
 class CategoryElasticRepository(AbstractElasticRepository, CategoryRepository):
