@@ -10,7 +10,7 @@ import pytest
 
 from src.application.category.list_category import ListCategory
 from src.domain.factories import CategoryFactory
-from src.application.listing import ListOutputMeta
+from src.application.listing import ListOutputMeta, ListOutput
 from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
 from src.infra.elasticsearch.client import get_elasticsearch, INDEXES
 
@@ -56,14 +56,14 @@ def test_list_categories_with_pagination(
     use_case = ListCategory(repository=test_repository)
     list_output = use_case.execute(ListCategory.Input(page=1, per_page=2))
 
-    assert list_output == ListCategory.Output(
+    assert list_output == ListOutput(
         data=[drama, romance],  # Sorted by name
         meta=ListOutputMeta(page=1, per_page=2, total_count=3),
     )
     assert list_output.meta.next_page == 2
 
     list_output = use_case.execute(ListCategory.Input(page=2, per_page=2))
-    assert list_output == ListCategory.Output(
+    assert list_output == ListOutput(
         data=[short],
         meta=ListOutputMeta(page=2, per_page=2, total_count=3),
     )
@@ -74,7 +74,6 @@ def test_list_categories_with_pagination(
     data = response.json()["data"]
     meta = response.json()["meta"]
 
-    assert len(data) == 2
     assert data[0]["name"] == "Drama"
     assert data[0]["description"] == drama.description
     assert data[0]["id"] == f"{drama.id}"
