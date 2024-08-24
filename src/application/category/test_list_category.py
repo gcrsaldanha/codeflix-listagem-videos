@@ -2,9 +2,9 @@ from unittest.mock import create_autospec
 
 import pytest
 
-from src.application.category.list_category import ListCategory
+from src.application.category.list_category import ListCategory, SortableFields
 from src.domain.factories import CategoryFactory
-from src.application.listing import ListOutputMeta
+from src.application.listing import ListOutputMeta, SortDirection
 from src.domain.category.category import Category
 from src.domain.category.category_repository import CategoryRepository
 from src import config
@@ -93,4 +93,12 @@ class TestListCategory:
                 per_page=config.DEFAULT_PAGINATION_SIZE,
                 total_count=3,
             ),
+        )
+
+        mock_populated_repository.search.assert_called_once_with(
+            page=1,
+            per_page=5,
+            sort=SortableFields.NAME,
+            direction=SortDirection.ASC,
+            search=None,
         )

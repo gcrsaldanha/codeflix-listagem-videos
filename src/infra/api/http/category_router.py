@@ -8,7 +8,7 @@ from src.application.exceptions import SearchError
 from src.application.category.list_category import ListCategory, SortableFields
 from src.application.listing import ListOutput, SortDirection
 from src.domain.category.category import Category
-from src.infra.repository.elastic.category_elastic_repository import CategoryElasticRepository
+from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
 
 logger = logging.getLogger(__name__)
 
