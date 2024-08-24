@@ -1,11 +1,9 @@
 from enum import StrEnum
-from typing import TypeVar, Generic
 
 from pydantic import BaseModel, computed_field, Field
 
 from src import config
-
-T = TypeVar("T")
+from src.domain.entity import Entity
 
 
 class SortDirection(StrEnum):
@@ -32,6 +30,6 @@ class ListOutputMeta(BaseModel):
         return next_page if self.total_count > self.page * self.per_page else None
 
 
-class ListOutput(BaseModel, Generic[T]):
-    data: list[T] = Field(default_factory=list)
+class ListOutput(BaseModel):
+    data: list[Entity] = Field(default_factory=list)
     meta: ListOutputMeta = Field(default_factory=ListOutputMeta)

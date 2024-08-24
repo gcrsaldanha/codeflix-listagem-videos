@@ -8,7 +8,7 @@ from src.domain.entity import Entity
 from src.domain.repository import Repository
 
 
-class AbstractElasticRepository(Repository, ABC):
+class AbstractElasticRepository(Repository):
     def __init__(
         self,
         index: str,

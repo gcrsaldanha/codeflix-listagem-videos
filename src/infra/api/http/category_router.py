@@ -46,7 +46,7 @@ def list_categories(
     except SearchError as err:
         logger.error(f"Search error: {err}", exc_info=True)
         return Response(status_code=500, content="Error when searching categories")
-    return ListOutput(data=output.data, meta=output.meta)
+    return output
 
 
 @router.post("/", response_model=Category)
