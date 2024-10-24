@@ -3,8 +3,9 @@ from unittest.mock import create_autospec
 import pytest
 
 from src.application.category.list_category import ListCategory, SortableFields
+from src.application.genre.list_genre import ListGenre
 from src.domain.factories import CategoryFactory
-from src.application.listing import ListOutputMeta, SortDirection
+from src.application.listing import ListOutputMeta, SortDirection, ListOutput
 from src.domain.category.category import Category
 from src.domain.category.category_repository import CategoryRepository
 from src import config
@@ -63,7 +64,7 @@ class TestListCategory:
         use_case = ListCategory(repository=mock_empty_repository)
         response = use_case.execute(input=ListCategory.Input())
 
-        assert response == ListCategory.Output(
+        assert response == ListOutput(
             data=[],
             meta=ListOutputMeta(
                 page=1,
@@ -82,7 +83,7 @@ class TestListCategory:
         use_case = ListCategory(repository=mock_populated_repository)
         response = use_case.execute(input=ListCategory.Input())
 
-        assert response == ListCategory.Output(
+        assert response == ListOutput(
             data=[
                 category_documentary,
                 category_movie,

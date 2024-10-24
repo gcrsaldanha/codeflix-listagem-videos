@@ -5,9 +5,10 @@ from elasticsearch import Elasticsearch
 from fastapi.testclient import TestClient
 
 from src.application.genre.list_genre import ListGenre
-from src.application.listing import ListOutputMeta
+from src.application.listing import ListOutputMeta, ListOutput
 from src.config import ELASTICSEARCH_TEST_HOST
 from src.domain.factories import CategoryFactory, GenreFactory
+from src.domain.genre.genre import Genre
 from src.infra.api.http.genre_router import get_repository
 from src.infra.api.http.main import app
 from src.infra.elasticsearch.client import get_elasticsearch, INDEXES
@@ -58,7 +59,7 @@ def test_list_genres_with_pagination(
     use_case = ListGenre(repository=test_repository)
     list_output = use_case.execute(ListGenre.Input(page=1, per_page=2))
 
-    assert list_output == ListGenre.Output(
+    assert list_output == ListOutput(
         data=[comedy, drama],
         meta=ListOutputMeta(page=1, per_page=2, total_count=3),
     )
@@ -66,7 +67,7 @@ def test_list_genres_with_pagination(
 
     # Fetch next page
     list_output = use_case.execute(ListGenre.Input(page=2, per_page=2))
-    assert list_output == ListGenre.Output(
+    assert list_output == ListOutput(
         data=[romance],
         meta=ListOutputMeta(page=2, per_page=2, total_count=3),
     )

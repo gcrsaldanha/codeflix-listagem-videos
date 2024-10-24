@@ -1,7 +1,7 @@
 from unittest.mock import create_autospec
 
 from src.application.genre.list_genre import ListGenre, SortableFields
-from src.application.listing import ListOutputMeta, SortDirection
+from src.application.listing import ListOutputMeta, SortDirection, ListOutput
 from src.domain.factories import CategoryFactory, GenreFactory
 from src.domain.genre.genre_repository import GenreRepository
 
@@ -16,7 +16,7 @@ class TestListGenre:
         use_case = ListGenre(repository=repository)
         response = use_case.execute(input=ListGenre.Input())
 
-        assert response == ListGenre.Output(
+        assert response == ListOutput(
             data=[],
             meta=ListOutputMeta(),
         )
@@ -44,7 +44,7 @@ class TestListGenre:
             )
         )
 
-        assert response == ListGenre.Output(
+        assert response == ListOutput(
             data=[genre_drama, genre_comedy],
             meta=ListOutputMeta(
                 total_count=2,

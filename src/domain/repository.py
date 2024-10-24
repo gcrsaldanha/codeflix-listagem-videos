@@ -1,14 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Tuple, TypeVar, Generic
 
 from src.application.listing import SortDirection
 from src.config import DEFAULT_PAGINATION_SIZE
 from src.domain.entity import Entity
 
-T = TypeVar("T", bound=Entity)
 
-
-class Repository(ABC, Generic[T]):
+class Repository[T: Entity](ABC):
     @abstractmethod
     def search(
         self,
@@ -17,5 +14,5 @@ class Repository(ABC, Generic[T]):
         search: str | None = None,
         sort: str | None = None,
         direction: SortDirection = SortDirection.ASC,
-    ) -> Tuple[list[T], int]:
+    ) -> tuple[list[T], int]:
         raise NotImplementedError

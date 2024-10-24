@@ -1,16 +1,16 @@
 from datetime import datetime
+from typing import Iterator
+
+import pytest
+from elasticsearch import Elasticsearch
 from fastapi.testclient import TestClient
 
+from src.application.category.list_category import ListCategory
+from src.application.listing import ListOutputMeta, ListOutput
 from src.config import ELASTICSEARCH_TEST_HOST
+from src.domain.factories import CategoryFactory
 from src.infra.api.http.category_router import get_repository
 from src.infra.api.http.main import app
-from typing import Iterator
-from elasticsearch import Elasticsearch
-import pytest
-
-from src.application.category.list_category import ListCategory
-from src.domain.factories import CategoryFactory
-from src.application.listing import ListOutputMeta
 from src.infra.elasticsearch.category_elastic_repository import CategoryElasticRepository
 from src.infra.elasticsearch.client import get_elasticsearch, INDEXES
 
@@ -56,14 +56,14 @@ def test_list_categories_with_pagination(
     use_case = ListCategory(repository=test_repository)
     list_output = use_case.execute(ListCategory.Input(page=1, per_page=2))
 
-    assert list_output == ListCategory.Output(
+    assert list_output == ListOutput(
         data=[drama, romance],  # Sorted by name
         meta=ListOutputMeta(page=1, per_page=2, total_count=3),
     )
     assert list_output.meta.next_page == 2
 
     list_output = use_case.execute(ListCategory.Input(page=2, per_page=2))
-    assert list_output == ListCategory.Output(
+    assert list_output == ListOutput(
         data=[short],
         meta=ListOutputMeta(page=2, per_page=2, total_count=3),
     )
