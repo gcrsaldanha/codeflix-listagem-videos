@@ -8,7 +8,6 @@ from src.application.genre.list_genre import ListGenre
 from src.application.listing import ListOutputMeta, ListOutput
 from src.config import ELASTICSEARCH_TEST_HOST
 from src.domain.factories import CategoryFactory, GenreFactory
-from src.domain.genre.genre import Genre
 from src.infra.api.http.genre_router import get_repository
 from src.infra.api.http.main import app
 from src.infra.elasticsearch.client import get_elasticsearch, INDEXES

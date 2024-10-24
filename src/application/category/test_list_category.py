@@ -2,13 +2,12 @@ from unittest.mock import create_autospec
 
 import pytest
 
+from src import config
 from src.application.category.list_category import ListCategory, SortableFields
-from src.application.genre.list_genre import ListGenre
-from src.domain.factories import CategoryFactory
 from src.application.listing import ListOutputMeta, SortDirection, ListOutput
 from src.domain.category.category import Category
 from src.domain.category.category_repository import CategoryRepository
-from src import config
+from src.domain.factories import CategoryFactory
 
 
 class TestListCategory:
