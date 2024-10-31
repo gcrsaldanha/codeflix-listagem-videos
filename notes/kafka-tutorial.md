@@ -77,6 +77,7 @@ Executar passos 4 e 5 em terminais diferentes.
   - `/opt/kafka/config/connect-standalone.properties`: plugin.path=/opt/kafka/libs/connect-file-3.7.0.jar, 
   - `/opt/kafka/config/connect-file-source.properties`: file=/opt/kafka/data/test.txt and topic
   - `/opt/kafka/config/connect-file-sink.properties`: file=/opt/kafka/data/test.sink.txt and topic
+  - `/opt/kafka/config/connect-log4j.properties`: `log4j.rootLogger=INFO, stdout, connectAppender`
  
 ```bash
 docker exec -it relaxed_poitras \
@@ -97,7 +98,7 @@ docker exec -it relaxed_poitras /opt/kafka/bin/kafka-console-consumer.sh --topic
 
 - [] Fazer diagrama.
 
-## Step 7: Processando eventos com Kafka Streams [skip]
+## ~Step 7: Processando eventos com Kafka Streams~ [skip]
 
 Kafka Stream é uma biblioteca em Java para processamento de eventos em tempo real.
 
@@ -117,6 +118,7 @@ docker run -p 9092:9092 -v kafka-data:/var/lib/kafka apache/kafka:3.7.0
 ### Docker compose
 From the official docker image:
 https://github.com/apache/kafka/blob/trunk/docker/examples/README.md
+https://github.com/apache/kafka/blob/trunk/docker/examples/docker-compose-files/single-node/plaintext/docker-compose.yml
 
 
 ### Por que não consigo conectar no container?
