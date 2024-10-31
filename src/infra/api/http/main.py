@@ -22,6 +22,12 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(category_router, prefix="/categories")
 app.include_router(genre_router, prefix="/genres")
 
+
+@app.get("/healthcheck")
+async def healthcheck():
+    return {"status": "ok"}
+
+
 if ENABLE_GRAPHQL:
     from src.infra.api.graphql.main import graphql_app
 
